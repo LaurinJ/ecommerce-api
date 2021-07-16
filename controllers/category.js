@@ -42,9 +42,7 @@ exports.list = (req, res) => {
 
 //     Blog.find({ categories: category })
 //       .populate("categories", "_id name slug")
-//       .populate("tags", "_id name slug")
-//       .populate("postedBy", "_id name")
-//       .select("_id title slug excerpt categories postedBy tags createdAt updatedAt")
+//       .select("_id title slug excerpt categories createdAt updatedAt")
 //       .exec((err, data) => {
 //         if (err) {
 //           return res.status(400).json({
