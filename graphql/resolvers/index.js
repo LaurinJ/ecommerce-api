@@ -2,5 +2,5 @@ const productResolvers = require("./product");
 
 module.exports = {
   Query: { ...productResolvers.Query },
-  //   Mutation: {},
+  Mutation: { ...productResolvers.Mutation },
 };
