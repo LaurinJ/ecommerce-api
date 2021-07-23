@@ -2,6 +2,7 @@ const express = require("express");
 const { ApolloServer } = require("apollo-server-express");
 const typeDefs = require("./graphql/typeDefs");
 const resolvers = require("./graphql/resolvers/index");
+const { graphqlUploadExpress } = require("graphql-upload");
 const mongoose = require("mongoose");
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
@@ -14,6 +15,7 @@ async function startApolloServer() {
   await server.start();
 
   const app = express();
+  app.use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 }));
   server.applyMiddleware({ app });
 
   mongoose
