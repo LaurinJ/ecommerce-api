@@ -11,7 +11,11 @@ const cors = require("cors");
 require("dotenv").config();
 
 async function startApolloServer() {
-  const server = new ApolloServer({ typeDefs, resolvers });
+  const server = new ApolloServer({
+    typeDefs,
+    resolvers,
+    context: ({ req }) => ({ header: req.headers }),
+  });
   await server.start();
 
   const app = express();
