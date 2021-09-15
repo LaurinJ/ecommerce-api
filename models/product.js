@@ -44,6 +44,7 @@ const productSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    countInStock: { type: Number, default: 0, require: true },
     categories: [{ type: ObjectId, ref: "Category", required: true }],
     hidden: {
       type: Number,

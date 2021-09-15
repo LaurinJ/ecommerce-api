@@ -7,21 +7,21 @@ const { multipleUpload } = require("../../helpers/image");
 module.exports = {
   Upload: GraphQLUpload,
   Query: {
-    async getProducts() {
-      const products = await Product.find({}).populate("categories");
+    async getProducts(_, { limit = 10, skip = 0 }) {
+      const products = await Product.find({}).populate("categories").skip(skip).limit(limit);
       if (products.length === 0) {
         throw new Error("Nebyli nalezené žádné produkty");
       }
-      return {
-        product: products.map((p) => {
-          console.log(p);
-          return {
-            ...p._doc,
-            createdAt: p.createdAt.toISOString(),
-            updatedAt: p.updatedAt.toISOString(),
-          };
-        }),
-      };
+      return products;
+      // return {
+      //   product: products.map((p) => {
+      //     return {
+      //       ...p._doc,
+      //       createdAt: p.createdAt.toISOString(),
+      //       updatedAt: p.updatedAt.toISOString(),
+      //     };
+      //   }),
+      // };
     },
     async getProduct(_, { slug }) {
       const product = await Product.findOne({ slug: slug.slug }).populate(

@@ -10,10 +10,15 @@ const cookieParser = require("cookie-parser");
 const cors = require("cors");
 require("dotenv").config();
 
+const corsOptions = {
+  origin: "*",
+};
+
 async function startApolloServer() {
   const server = new ApolloServer({
     typeDefs,
     resolvers,
+    cors: cors(corsOptions),
     context: ({ req }) => ({ header: req.headers }),
   });
   await server.start();

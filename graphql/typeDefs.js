@@ -3,6 +3,11 @@ const { gql } = require("apollo-server-express");
 module.exports = gql`
   scalar Upload
 
+  type Message {
+    status: String
+    text: String
+  }
+
   type User {
     _id: ID
     name: String!
@@ -12,6 +17,10 @@ module.exports = gql`
 
   type Token {
     accessToken: String!
+    refreshToken: String!
+  }
+
+  input RefreshToken {
     refreshToken: String!
   }
 
@@ -39,6 +48,7 @@ module.exports = gql`
     code: String
     price: Int!
     old_price: Int
+    countInStock: Int
     categories: [Category]
     images: [Image]
   }
@@ -65,11 +75,13 @@ module.exports = gql`
   type Query {
     login(user: userLoginData): Token!
     getProduct(slug: Slug!): Product!
-    getProducts: ProductData!
+    getProducts(limit: Int, skip: Int): [Product!]
   }
 
   type Mutation {
     createUser(user: userRegisterData!): Token!
+    logout(token: RefreshToken!): Message
+    generateRefreshToken(token: RefreshToken!): Token!
     createProduct(product: ProductInputData, images: [Upload!]!): Product!
   }
 `;
