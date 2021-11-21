@@ -2,13 +2,65 @@ const { GraphQLUpload } = require("graphql-upload");
 const Product = require("../../models/product");
 const Category = require("../../models/category");
 const slugify = require("slugify");
-const { multipleUpload } = require("../../helpers/image");
+const {
+  multipleUpload,
+  downloadFile,
+  multiDownload,
+  uploadProcess,
+} = require("../../helpers/image");
+
+const { chillfeed } = require("../../chillfeed");
 
 module.exports = {
   Upload: GraphQLUpload,
   Query: {
+    // only test
+    async testmultisave(_) {
+      // products = [];
+      const products = await Promise.all(
+        await chillfeed.SHOP.SHOPITEM.map(async (product) => {
+          imgUrl = await downloadFile(product.IMGURL[0], "images");
+          imgUrls = await Promise.all(
+            await multiDownload(product.IMAGES[0].IMGURL, "images")
+          );
+          item = {
+            title: product.PRODUCT_NAME[0],
+            slug: slugify(product.PRODUCT_NAME[0]),
+            description: product.DESCRIPTION_HTML[0],
+            short_description: product.DESCRIPTION[0],
+            imgurl: imgUrl,
+            images: imgUrls,
+            code: product.CODE[0],
+            price: Number(product.PRICE[0]),
+            old_price: Number(product.MINIMAL_PRICE_VAT[0]),
+            countInStock: Number(product.VAT[0]),
+            categories: ["slevy"],
+          };
+          return item;
+        })
+      );
+      Product.collection.insert(products, function (err, docs) {
+        if (err) {
+          return console.error(err);
+        } else {
+          console.log("Multiple documents inserted to Collection");
+        }
+      });
+
+      const product = await Product.findOne({ price: 156 }).populate(
+        "categories"
+      );
+      if (product.length === 0) {
+        throw new Error("Nebyli nalezené žádné produkty");
+      }
+      return product;
+    },
+
     async getProducts(_, { limit = 10, skip = 0 }) {
-      const products = await Product.find({}).populate("categories").skip(skip).limit(limit);
+      const products = await Product.find({})
+        // .populate("categories")
+        .skip(skip)
+        .limit(limit);
       if (products.length === 0) {
         throw new Error("Nebyli nalezené žádné produkty");
       }

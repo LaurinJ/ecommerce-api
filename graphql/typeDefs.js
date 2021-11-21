@@ -50,7 +50,7 @@ module.exports = gql`
     old_price: Int
     countInStock: Int
     categories: [Category]
-    images: [Image]
+    images: [String]
   }
 
   input ProductInputData {
@@ -73,6 +73,7 @@ module.exports = gql`
   }
 
   type Query {
+    testmultisave: Product!
     login(user: userLoginData): Token!
     getProduct(slug: Slug!): Product!
     getProducts(limit: Int, skip: Int): [Product!]
@@ -82,6 +83,6 @@ module.exports = gql`
     createUser(user: userRegisterData!): Token!
     logout(token: RefreshToken!): Message
     generateRefreshToken(token: RefreshToken!): Token!
-    createProduct(product: ProductInputData, images: [Upload!]!): Product!
+    createProduct(product: ProductInputData, images: [Upload]): Product!
   }
 `;

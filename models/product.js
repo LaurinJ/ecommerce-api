@@ -25,9 +25,10 @@ const productSchema = new mongoose.Schema(
       type: String,
       max: 1000,
     },
+    imgurl: { type: String, trim: true, max: 1000, required: true },
     images: [],
     code: {
-      type: Number,
+      type: String,
     },
     price: {
       type: Number,
