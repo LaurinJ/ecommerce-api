@@ -51,6 +51,7 @@ module.exports = gql`
     countInStock: Int
     categories: [Category]
     images: [String]
+    imgurl: String
   }
 
   input ProductInputData {

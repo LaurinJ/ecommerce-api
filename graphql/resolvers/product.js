@@ -18,11 +18,11 @@ module.exports = {
     async testmultisave(_) {
       // products = [];
       const products = await Promise.all(
-        await chillfeed.SHOP.SHOPITEM.map(async (product) => {
+        chillfeed.SHOP.SHOPITEM.map(async (product) => {
           imgUrl = await downloadFile(product.IMGURL[0], "images");
-          imgUrls = await Promise.all(
-            await multiDownload(product.IMAGES[0].IMGURL, "images")
-          );
+
+          imgUrls = await multiDownload(product.IMAGES[0].IMGURL, "images");
+
           item = {
             title: product.PRODUCT_NAME[0],
             slug: slugify(product.PRODUCT_NAME[0]),
@@ -31,8 +31,8 @@ module.exports = {
             imgurl: imgUrl,
             images: imgUrls,
             code: product.CODE[0],
-            price: Number(product.PRICE[0]),
-            old_price: Number(product.MINIMAL_PRICE_VAT[0]),
+            price: Math.round(Number(product.PRICE[0])),
+            old_price: Math.round(Number(product.MINIMAL_PRICE_VAT[0])),
             countInStock: Number(product.VAT[0]),
             categories: ["slevy"],
           };
@@ -47,7 +47,7 @@ module.exports = {
         }
       });
 
-      const product = await Product.findOne({ price: 156 }).populate(
+      const product = await Product.findOne({ price: 157 }).populate(
         "categories"
       );
       if (product.length === 0) {
@@ -64,7 +64,7 @@ module.exports = {
       if (products.length === 0) {
         throw new Error("Nebyli nalezené žádné produkty");
       }
-      return products;
+      return [...products];
       // return {
       //   product: products.map((p) => {
       //     return {

@@ -21,10 +21,11 @@ async function multipleUpload(files) {
 
 async function multiDownload(fileUrls, downloadFolder) {
   // Get the file name
-  const imgPaths = await fileUrls.map(async (fileUrl) => {
-    return await downloadFile(fileUrl, downloadFolder);
+  const imgPaths = fileUrls.map((fileUrl) => {
+    return downloadFile(fileUrl, downloadFolder);
   });
-  return imgPaths;
+
+  return await Promise.all(imgPaths);
 }
 
 const downloadFile = async (fileUrl, downloadFolder) => {

@@ -25,6 +25,7 @@ async function startApolloServer() {
 
   const app = express();
   app.use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 }));
+  app.use(express.static("images"));
   server.applyMiddleware({ app });
 
   mongoose
