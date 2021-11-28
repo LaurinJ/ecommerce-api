@@ -49,6 +49,8 @@ module.exports = gql`
     price: Int!
     old_price: Int
     countInStock: Int
+    rating: Int
+    rating_sum: Int
     categories: [Category]
     images: [String]
     imgurl: String
@@ -73,11 +75,16 @@ module.exports = gql`
     name: String
   }
 
+  type CountPages {
+    pages: Int!
+  }
+
   type Query {
     testmultisave: Product!
     login(user: userLoginData): Token!
-    getProduct(slug: Slug!): Product!
+    getProduct(slug: String!): Product!
     getProducts(limit: Int, skip: Int): [Product!]
+    getCountPages: CountPages!
   }
 
   type Mutation {

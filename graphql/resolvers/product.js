@@ -31,6 +31,8 @@ module.exports = {
             imgurl: imgUrl,
             images: imgUrls,
             code: product.CODE[0],
+            rating_sum: Math.floor(Math.random() * 1000),
+            rating: Math.ceil(Math.random() * 5),
             price: Math.round(Number(product.PRICE[0])),
             old_price: Math.round(Number(product.MINIMAL_PRICE_VAT[0])),
             countInStock: Number(product.VAT[0]),
@@ -56,10 +58,11 @@ module.exports = {
       return product;
     },
 
-    async getProducts(_, { limit = 10, skip = 0 }) {
+    async getProducts(_, { limit = 12, skip = 0 }) {
+      const page = skip <= 1 ? 0 : skip * limit - 12;
       const products = await Product.find({})
         // .populate("categories")
-        .skip(skip)
+        .skip(page)
         .limit(limit);
       if (products.length === 0) {
         throw new Error("Nebyli nalezené žádné produkty");
@@ -76,14 +79,19 @@ module.exports = {
       // };
     },
     async getProduct(_, { slug }) {
-      const product = await Product.findOne({ slug: slug.slug }).populate(
-        "categories",
+      const product = await Product.findOne({ slug: slug }).populate(
+        // "categories",
         "-__v -_id"
       );
       if (!product) {
         throw new Error("Produkt nebyl nalezen");
       }
       return product;
+    },
+    async getCountPages() {
+      const count = await Product.estimatedDocumentCount();
+      const pages = Math.round(count / 12);
+      return { pages: pages };
     },
   },
   Mutation: {
