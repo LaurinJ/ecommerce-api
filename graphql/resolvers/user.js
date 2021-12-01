@@ -5,7 +5,8 @@ const User = require("../../models/user");
 const Token = require("../../models/token");
 
 module.exports = {
-  Query: {
+  Query: {},
+  Mutation: {
     async login(_, { user }) {
       try {
         //check if user exists in database:
@@ -20,7 +21,6 @@ module.exports = {
             //generate a pair of tokens if valid and send
             let accessToken = await _user.createAccessToken();
             let refreshToken = await _user.createRefreshToken();
-
             return { accessToken, refreshToken };
           } else {
             //send error if password is invalid
@@ -29,11 +29,9 @@ module.exports = {
         }
       } catch (error) {
         console.error(error);
-        throw new Error("Internal Server Error!");
+        throw new ApolloError(error.message, 401);
       }
     },
-  },
-  Mutation: {
     async createUser(_, { user }) {
       try {
         //check if username is already taken:
@@ -80,10 +78,17 @@ module.exports = {
             throw new Error("Platnost tokenu vypršela!");
           } else {
             //extract payload from refresh token and generate a new access token and send it
-            const payload = jwt.verify(tokenDoc.token, process.env.REFRESH_TOKEN_SECRET);
-            const accessToken = jwt.sign({ user: payload }, process.env.ACCESS_TOKEN_SECRET, {
-              expiresIn: "10m",
-            });
+            const payload = jwt.verify(
+              tokenDoc.token,
+              process.env.REFRESH_TOKEN_SECRET
+            );
+            const accessToken = jwt.sign(
+              { user: payload },
+              process.env.ACCESS_TOKEN_SECRET,
+              {
+                expiresIn: "10m",
+              }
+            );
             return { accessToken: accessToken };
           }
         }

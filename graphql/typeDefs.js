@@ -81,7 +81,6 @@ module.exports = gql`
 
   type Query {
     testmultisave: Product!
-    login(user: userLoginData): Token!
     getProduct(slug: String!): Product!
     getProducts(limit: Int, skip: Int): [Product!]
     getCountPages: CountPages!
@@ -89,6 +88,7 @@ module.exports = gql`
 
   type Mutation {
     createUser(user: userRegisterData!): Token!
+    login(user: userLoginData): Token!
     logout(token: RefreshToken!): Message
     generateRefreshToken(token: RefreshToken!): Token!
     createProduct(product: ProductInputData, images: [Upload]): Product!
