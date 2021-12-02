@@ -21,7 +21,9 @@ module.exports = {
             //generate a pair of tokens if valid and send
             let accessToken = await _user.createAccessToken();
             let refreshToken = await _user.createRefreshToken();
-            return { accessToken, refreshToken };
+            let name = _user.name;
+            let email = _user.email;
+            return { accessToken, refreshToken, user: _user };
           } else {
             //send error if password is invalid
             throw new Error("Neplatné heslo!");
@@ -52,6 +54,7 @@ module.exports = {
     },
 
     async logout(_, { token }) {
+      console.log(token);
       try {
         //delete the refresh token saved in database:
         const { refreshToken } = token;
