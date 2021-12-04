@@ -94,7 +94,7 @@ module.exports = gql`
 
   type Mutation {
     createUser(user: userRegisterData!): Token!
-    login(user: userLoginData): User_Token!
+    login(user: userLoginData): User_Token
     logout(token: RefreshToken!): Message
     generateRefreshToken(token: RefreshToken!): Token!
     createProduct(product: ProductInputData, images: [Upload]): Product!

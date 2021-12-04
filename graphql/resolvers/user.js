@@ -26,7 +26,7 @@ module.exports = {
             return { accessToken, refreshToken, user: _user };
           } else {
             //send error if password is invalid
-            throw new Error("Neplatné heslo!");
+            throw new Error("Neplatný email nebo heslo!");
           }
         }
       } catch (error) {
