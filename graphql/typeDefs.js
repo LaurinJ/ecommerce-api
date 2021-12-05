@@ -39,6 +39,7 @@ module.exports = gql`
     name: String!
     email: String!
     password: String!
+    confirm_password: String!
   }
 
   type Image {
@@ -93,7 +94,7 @@ module.exports = gql`
   }
 
   type Mutation {
-    createUser(user: userRegisterData!): Token!
+    createUser(user: userRegisterData!): User_Token
     login(user: userLoginData): User_Token
     logout(token: RefreshToken!): Message
     generateRefreshToken(token: RefreshToken!): Token!

@@ -1,4 +1,8 @@
-const { ApolloError } = require("apollo-server-express");
+const {
+  ApolloError,
+  UserInputError,
+  ValidationError,
+} = require("apollo-server-express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../../models/user");
@@ -13,7 +17,7 @@ module.exports = {
         let _user = await User.findOne({ email: user.email });
         //send error if no user found:
         if (!_user) {
-          throw new Error("Uživatel nebyl nalezen!");
+          throw new UserInputError("Uživatel nebyl nalezen!");
         } else {
           //check if password is valid:
           let valid = await bcrypt.compare(user.password, _user.password);
@@ -26,7 +30,7 @@ module.exports = {
             return { accessToken, refreshToken, user: _user };
           } else {
             //send error if password is invalid
-            throw new Error("Neplatný email nebo heslo!");
+            throw new UserInputError("Neplatný email nebo heslo!");
           }
         }
       } catch (error) {
@@ -35,26 +39,32 @@ module.exports = {
       }
     },
     async createUser(_, { user }) {
-      try {
-        //check if username is already taken:
-        let _user = await User.findOne({ email: user.email });
-        if (_user) {
-          throw new Error("Email je již použit.");
-        } else {
-          //create new user and generate a pair of tokens and send
-          _user = await new User(user).save();
-          let accessToken = await _user.createAccessToken();
-          let refreshToken = await _user.createRefreshToken();
-          return { accessToken, refreshToken };
-        }
-      } catch (error) {
-        console.error(error);
-        throw new ApolloError(error.message, 401);
+      //check if username is already taken:
+      let _user = await User.findOne({ email: user.email });
+      let name = await User.findOne({ name: user.name });
+      let errors = [];
+      if (name) {
+        errors.push("Jméno je již obsazeno.");
       }
+      if (_user) {
+        errors.push("Email je již použit");
+      }
+      if (user.password !== user.confirm_password) {
+        errors.push("Hesla se neshodují.");
+      }
+      if (errors.length != 0) {
+        throw new UserInputError("Invalid argument value", {
+          errors: errors,
+        });
+      }
+      //create new user and generate a pair of tokens and send
+      _user = await new User(user).save();
+      let accessToken = await _user.createAccessToken();
+      let refreshToken = await _user.createRefreshToken();
+      return { accessToken, refreshToken, user: _user };
     },
 
     async logout(_, { token }) {
-      console.log(token);
       try {
         //delete the refresh token saved in database:
         const { refreshToken } = token;
