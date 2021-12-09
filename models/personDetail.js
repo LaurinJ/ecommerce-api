@@ -14,10 +14,15 @@ const personDetailSchema = new mongoose.Schema(
       max: 100,
       required: true,
     },
+    email: {
+      type: String,
+      trim: true,
+      max: 100,
+      required: true,
+    },
     phone: {
       type: Number,
       trim: true,
-      max: 13,
       required: true,
     },
   },

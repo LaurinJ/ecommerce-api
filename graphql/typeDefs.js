@@ -86,6 +86,24 @@ module.exports = gql`
     pages: Int!
   }
 
+  input AddressData {
+    village: String!
+    street: String!
+    postCode: Int!
+    numberDescriptive: Int!
+  }
+
+  input PersonData {
+    email: String!
+    first_name: String!
+    last_name: String!
+    phone: Int!
+  }
+
+  type OrderToken {
+    token: String!
+  }
+
   type Query {
     testmultisave: Product!
     getProduct(slug: String!): Product!
@@ -99,5 +117,6 @@ module.exports = gql`
     logout(token: RefreshToken!): Message
     generateRefreshToken(token: RefreshToken!): Token!
     createProduct(product: ProductInputData, images: [Upload]): Product!
+    personAdress(person: PersonData, address: AddressData): OrderToken!
   }
 `;

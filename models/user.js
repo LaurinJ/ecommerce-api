@@ -33,9 +33,13 @@ userSchema.methods = {
   createAccessToken: async function () {
     try {
       let { _id, name } = this;
-      let accessToken = jwt.sign({ user: { _id, name } }, process.env.ACCESS_TOKEN_SECRET, {
-        expiresIn: "10m",
-      });
+      let accessToken = jwt.sign(
+        { user: { _id, name } },
+        process.env.ACCESS_TOKEN_SECRET,
+        {
+          expiresIn: "10m",
+        }
+      );
       return accessToken;
     } catch (error) {
       console.error(error);
@@ -45,9 +49,13 @@ userSchema.methods = {
   createRefreshToken: async function () {
     try {
       let { _id, name } = this;
-      let refreshToken = jwt.sign({ user: { _id, name } }, process.env.REFRESH_TOKEN_SECRET, {
-        expiresIn: "1d",
-      });
+      let refreshToken = jwt.sign(
+        { user: { _id, name } },
+        process.env.REFRESH_TOKEN_SECRET,
+        {
+          expiresIn: "1d",
+        }
+      );
 
       await new Token({ token: refreshToken }).save();
       return refreshToken;
@@ -62,6 +70,7 @@ userSchema.pre("save", async function (next) {
   try {
     let salt = await bcrypt.genSalt(12); // generate hash salt of 12 rounds
     let hashedPassword = await bcrypt.hash(this.password, salt); // hash the current user's password
+    console.log(hashedPassword);
     this.password = hashedPassword;
   } catch (error) {
     console.error(error);
