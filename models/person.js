@@ -1,6 +1,5 @@
-const crypto = require("crypto");
-const bcrypt = require("bcryptjs");
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
+import crypto from "crypto";
 const { ObjectId } = mongoose.Schema;
 
 const personSchema = new mongoose.Schema(
@@ -42,4 +41,4 @@ personSchema.pre("validate", async function (next) {
   return next();
 });
 
-module.exports = mongoose.model("Person", personSchema);
+export const Person = mongoose.model("Person", personSchema);

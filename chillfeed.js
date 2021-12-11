@@ -1,4 +1,4 @@
-const chillfeed = {
+export const chillfeed = {
   SHOP: {
     SHOPITEM: [
       {
@@ -2684,5 +2684,3 @@ const chillfeed = {
     ],
   },
 };
-
-module.exports = { chillfeed };

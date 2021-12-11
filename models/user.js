@@ -1,9 +1,14 @@
-const mongoose = require("mongoose");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const Token = require("./token");
+// import { Schema, model } from "mongoose";
+// const bcrypt = require("bcryptjs");
+// const jwt = require("jsonwebtoken");
+// const Token = require("./token");
 
-const userSchema = mongoose.Schema(
+import mongoose from "mongoose";
+import bcryptjs from "bcryptjs";
+import jwt from "jsonwebtoken";
+import { Token } from "./token.js";
+
+const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,
@@ -78,4 +83,4 @@ userSchema.pre("save", async function (next) {
   return next();
 });
 
-module.exports = mongoose.model("User", userSchema);
+export const User = mongoose.model("User", userSchema);

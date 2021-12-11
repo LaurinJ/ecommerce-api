@@ -1,4 +1,4 @@
-function addressValidator(address) {
+export function addressValidator(address) {
   const errors = {};
   for (let [key, value] of Object.entries(address)) {
     if (!value) {
@@ -7,5 +7,3 @@ function addressValidator(address) {
   }
   return errors;
 }
-
-module.exports = { addressValidator };

@@ -1,9 +1,14 @@
-const fs = require("fs");
-const { finished } = require("stream");
-const path = require("path");
-const axios = require("axios");
+// const fs = require("fs");
+// const { finished } = require("stream");
+// const path = require("path");
+// const axios = require("axios");
 
-async function uploadProcess(file) {
+import fs from "fs";
+import { finished } from "stream";
+import path from "path";
+import axios from "axios";
+
+export async function uploadProcess(file) {
   const { createReadStream, filename, mimetype, encoding } = await file.file;
   const stream = createReadStream();
   let path = "images/" + Date.now() + filename;
@@ -13,13 +18,13 @@ async function uploadProcess(file) {
   return { path, filename };
 }
 
-async function multipleUpload(files) {
+export async function multipleUpload(files) {
   const promises = await (await Promise.all(files)).map(uploadProcess);
   const images = await Promise.all(promises.map((data) => data));
   return images;
 }
 
-async function multiDownload(fileUrls, downloadFolder) {
+export async function multiDownload(fileUrls, downloadFolder) {
   // Get the file name
   const imgPaths = fileUrls.map((fileUrl) => {
     return downloadFile(fileUrl, downloadFolder);
@@ -28,7 +33,7 @@ async function multiDownload(fileUrls, downloadFolder) {
   return await Promise.all(imgPaths);
 }
 
-const downloadFile = async (fileUrl, downloadFolder) => {
+export const downloadFile = async (fileUrl, downloadFolder) => {
   // Get the file name
   const fileName = path.basename(fileUrl);
 
@@ -51,5 +56,3 @@ const downloadFile = async (fileUrl, downloadFolder) => {
     throw new Error(err);
   }
 };
-
-module.exports = { uploadProcess, multipleUpload, downloadFile, multiDownload };

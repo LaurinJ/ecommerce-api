@@ -1,8 +1,12 @@
-const productResolvers = require("./product");
-const userResolvers = require("./user");
-const orderResolvers = require("./order");
+// const productResolvers = require("./product");
+// const userResolvers = require("./user");
+// const orderResolvers = require("./order");
 
-module.exports = {
+import { productResolvers } from "./product.js";
+import { userResolvers } from "./user.js";
+import { orderResolvers } from "./order.js";
+
+export const resolvers = {
   Query: {
     ...productResolvers.Query,
     ...userResolvers.Query,

@@ -1,17 +1,18 @@
-const {
-  ApolloError,
-  UserInputError,
-  ValidationError,
-} = require("apollo-server-express");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const Address = require("../../models/address");
-const Person = require("../../models/person");
-const PersonDetail = require("../../models/personDetail");
-const { personValidator } = require("../../validators/person");
-const { addressValidator } = require("../../validators/address");
+// const { UserInputError } = require("apollo-server-express");
+// const Address = require("../../models/address");
+// const Person = require("../../models/person");
+// const PersonDetail = require("../../models/personDetail");
+// const { personValidator } = require("../../validators/person");
+// const { addressValidator } = require("../../validators/address");
 
-module.exports = {
+import { UserInputError } from "apollo-server-express";
+import { Address } from "../../models/address.js";
+import { Person } from "../../models/person.js";
+import { PersonDetail } from "../../models/personDetail.js";
+import { personValidator } from "../../validators/person.js";
+import { addressValidator } from "../../validators/address.js";
+
+export const orderResolvers = {
   Query: {},
   Mutation: {
     async personAdress(_, { person, address }) {

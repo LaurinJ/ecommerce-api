@@ -1,5 +1,4 @@
-const mongoose = require("mongoose");
-const { ObjectId } = mongoose.Schema;
+import mongoose from "mongoose";
 
 const paymentSchema = new mongoose.Schema(
   {
@@ -15,6 +14,10 @@ const paymentSchema = new mongoose.Schema(
       max: 100,
       required: true,
     },
+    img: {
+      type: String,
+      trim: true,
+    },
     hidden: {
       type: Boolean,
       default: false,
@@ -24,4 +27,4 @@ const paymentSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Payment", paymentSchema);
+export const Payment = mongoose.model("Payment", paymentSchema);

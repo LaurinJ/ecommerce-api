@@ -1,17 +1,29 @@
-const { GraphQLUpload } = require("graphql-upload");
-const Product = require("../../models/product");
-const Category = require("../../models/category");
-const slugify = require("slugify");
-const {
+// const { GraphQLUpload } = require("graphql-upload");
+// const Product = require("../../models/product");
+// const Category = require("../../models/category");
+// const slugify = require("slugify");
+// const {
+//   multipleUpload,
+//   downloadFile,
+//   multiDownload,
+//   uploadProcess,
+// } = require("../../helpers/image");
+
+// const { chillfeed } = require("../../chillfeed");
+
+import { GraphQLUpload } from "graphql-upload";
+import { Product } from "../../models/product.js";
+import { Category } from "../../models/category.js";
+import slugify from "slugify";
+import {
   multipleUpload,
   downloadFile,
   multiDownload,
   uploadProcess,
-} = require("../../helpers/image");
+} from "../../helpers/image.js";
+import { chillfeed } from "../../chillfeed.js";
 
-const { chillfeed } = require("../../chillfeed");
-
-module.exports = {
+export const productResolvers = {
   Upload: GraphQLUpload,
   Query: {
     // only test

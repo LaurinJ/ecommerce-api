@@ -1,4 +1,4 @@
-function personValidator(person) {
+export function personValidator(person) {
   const errors = {};
   const regexName = /^[a-zA-Z]+$/;
   const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
@@ -22,5 +22,3 @@ function personValidator(person) {
   }
   return errors;
 }
-
-module.exports = { personValidator };

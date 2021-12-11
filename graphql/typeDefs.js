@@ -1,6 +1,9 @@
-const { gql } = require("apollo-server-express");
+// const { gql } = require("apollo-server-express");
+// const { makeExecutableSchema } = require("graphql-tools");
 
-module.exports = gql`
+import gql from "apollo-server-express";
+
+export const typeDefs = `
   scalar Upload
 
   type Message {

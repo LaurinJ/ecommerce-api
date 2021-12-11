@@ -1,14 +1,24 @@
-const {
+// const {
+//   ApolloError,
+//   UserInputError,
+//   ValidationError,
+// } = require("apollo-server-express");
+// const bcrypt = require("bcryptjs");
+// const jwt = require("jsonwebtoken");
+// const User = require("../../models/user");
+// const Token = require("../../models/token");
+
+import {
   ApolloError,
   UserInputError,
   ValidationError,
-} = require("apollo-server-express");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const User = require("../../models/user");
-const Token = require("../../models/token");
+} from "apollo-server-express";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import { User } from "../../models/user.js";
+import { Token } from "../../models/token.js";
 
-module.exports = {
+export const userResolvers = {
   Query: {},
   Mutation: {
     async login(_, { user }) {

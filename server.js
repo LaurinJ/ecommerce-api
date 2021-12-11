@@ -1,20 +1,29 @@
-const express = require("express");
-const { ApolloServer } = require("apollo-server-express");
-const typeDefs = require("./graphql/typeDefs");
-const resolvers = require("./graphql/resolvers/index");
-const { graphqlUploadExpress } = require("graphql-upload");
-const mongoose = require("mongoose");
-const morgan = require("morgan");
-const bodyParser = require("body-parser");
-const cookieParser = require("cookie-parser");
-const cors = require("cors");
-require("dotenv").config();
+// const express = require("express");
+// const { ApolloServer } = require("apollo-server-express");
+// const typeDefs = require("./graphql/typeDefs");
+// const resolvers = require("./graphql/resolvers/index");
+// const { graphqlUploadExpress } = require("graphql-upload");
+// const mongoose = require("mongoose");
+// const cors = require("cors");
+// require("dotenv").config();
 
-const corsOptions = {
-  origin: "*",
-};
+// import "./config.js";
+import {} from "dotenv/config";
+import express from "express";
+import { ApolloServer } from "apollo-server-express";
+import { typeDefs } from "./graphql/typeDefs.js";
+import { resolvers } from "./graphql/resolvers/index.js";
+import { graphqlUploadExpress } from "graphql-upload";
+import mongoose from "mongoose";
+import cors from "cors";
+
+// import { startApolloServer } from "./apollo.js";
 
 async function startApolloServer() {
+  const corsOptions = {
+    origin: "*",
+  };
+
   const server = new ApolloServer({
     typeDefs,
     resolvers,
@@ -27,6 +36,7 @@ async function startApolloServer() {
   app.use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 }));
   app.use(express.static("images"));
   server.applyMiddleware({ app });
+  console.log(process.env.DATABASE_LOCAL);
 
   mongoose
     .connect(process.env.DATABASE_LOCAL, {

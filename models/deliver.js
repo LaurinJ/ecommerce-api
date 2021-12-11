@@ -1,5 +1,4 @@
-const mongoose = require("mongoose");
-const { ObjectId } = mongoose.Schema;
+import mongoose from "mongoose";
 
 const deliverSchema = new mongoose.Schema(
   {
@@ -24,4 +23,4 @@ const deliverSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Deliver", deliverSchema);
+export const Deliver = mongoose.model("Deliver", deliverSchema);
