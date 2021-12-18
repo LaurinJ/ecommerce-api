@@ -11,8 +11,11 @@ const deliverSchema = new mongoose.Schema(
     price: {
       type: Number,
       trim: true,
-      max: 100,
       required: true,
+    },
+    image: {
+      type: String,
+      trim: true,
     },
     hidden: {
       type: Boolean,

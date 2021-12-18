@@ -1,14 +1,8 @@
-// const { UserInputError } = require("apollo-server-express");
-// const Address = require("../../models/address");
-// const Person = require("../../models/person");
-// const PersonDetail = require("../../models/personDetail");
-// const { personValidator } = require("../../validators/person");
-// const { addressValidator } = require("../../validators/address");
-
 import { UserInputError } from "apollo-server-express";
 import { Address } from "../../models/address.js";
 import { Person } from "../../models/person.js";
 import { PersonDetail } from "../../models/personDetail.js";
+import { Order } from "../../models/order.js";
 import { personValidator } from "../../validators/person.js";
 import { addressValidator } from "../../validators/address.js";
 
@@ -40,6 +34,22 @@ export const orderResolvers = {
       }).save();
 
       return { token: _person.token };
+    },
+    async createOrder(_, { order, token }) {
+      if (!order.payment_method || !order.deliver_method) {
+        throw new UserInputError("Nebyl zadán způsob platby nebo dopravy");
+      }
+      let person = await Person.findOne(token);
+      console.log(person);
+      let _order = await new Order({
+        person: person._id,
+        ...order,
+      }).save();
+
+      if (_order) {
+        return { status: "ok" };
+      }
+      throw new Error("Něco se pokazilo");
     },
   },
 };

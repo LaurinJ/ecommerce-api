@@ -8,14 +8,20 @@ import { finished } from "stream";
 import path from "path";
 import axios from "axios";
 
-export async function uploadProcess(file) {
+export async function uploadProcess(file, path) {
   const { createReadStream, filename, mimetype, encoding } = await file.file;
   const stream = createReadStream();
-  let path = "images/" + Date.now() + filename;
-  const out = fs.createWriteStream(path);
+  const imageName = Date.now() + filename;
+  let _path;
+  if (path) {
+    _path = "images/" + path + imageName;
+  } else {
+    _path = "images/" + imageName;
+  }
+  const out = fs.createWriteStream(_path);
   stream.pipe(out);
-  path = path.split("/")[1];
-  return { path, filename };
+  _path = path + imageName;
+  return { _path, filename };
 }
 
 export async function multipleUpload(files) {

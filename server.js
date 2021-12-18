@@ -11,7 +11,8 @@
 import {} from "dotenv/config";
 import express from "express";
 import { ApolloServer } from "apollo-server-express";
-import { typeDefs } from "./graphql/typeDefs.js";
+// import { typeDefs } from "./graphql/typeDefs.js";
+import { schema } from "./graphql/schema/schema.js";
 import { resolvers } from "./graphql/resolvers/index.js";
 import { graphqlUploadExpress } from "graphql-upload";
 import mongoose from "mongoose";
@@ -25,7 +26,7 @@ async function startApolloServer() {
   };
 
   const server = new ApolloServer({
-    typeDefs,
+    typeDefs: schema,
     resolvers,
     cors: cors(corsOptions),
     context: ({ req }) => ({ header: req.headers }),
@@ -43,6 +44,7 @@ async function startApolloServer() {
       useNewUrlParser: true,
       useCreateIndex: true,
       useFindAndModify: false,
+      useUnifiedTopology: true,
     })
     .then(() => console.log("Connected to MongoDB!"))
     .catch((err) => console.error("Could not connect to MongoDB... ", err));
@@ -52,28 +54,4 @@ async function startApolloServer() {
   return { server, app };
 }
 
-// const productRoutes = require("./routes/product");
-// const authRoutes = require("./routes/auth");
-// const userRoutes = require("./routes/user");
-// const categoryRoutes = require("./routes/category");
-// const tagRoutes = require("./routes/tag");
-// const formRoutes = require("./routes/form");
-const { app } = startApolloServer();
-console.log(app);
-// app.use(morgan("dev"));
-// app.use(bodyParser.json());
-// app.use(cookieParser());
-
-// if (process.env.NODE_ENV == "developmet") {
-//   app.use(cors({ origin: `${process.env.CLIENT_URL}` }));
-// }
-
-// app.use("/api", productRoutes);
-// app.use("/api", authRoutes);
-// app.use("/api", userRoutes);
-// app.use("/api", categoryRoutes);
-// app.use("/api", tagRoutes);
-// app.use("/api", formRoutes);
-
-// const port = process.env.PORT;
-// app.listen(port, () => console.log(`Listening on port ${port}...`));
+startApolloServer();

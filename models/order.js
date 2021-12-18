@@ -12,7 +12,6 @@ const orderSchema = new mongoose.Schema(
     total_price: {
       type: Number,
       trim: true,
-      max: 100,
       required: true,
     },
     payment_method: {
@@ -42,6 +41,7 @@ const orderSchema = new mongoose.Schema(
     state: {
       type: String,
       enum: [
+        "unfinished",
         "created",
         "completed",
         "accepted",
@@ -49,7 +49,7 @@ const orderSchema = new mongoose.Schema(
         "suspended",
         "canceled",
       ],
-      default: "created",
+      default: "unfinished",
     },
   },
 

@@ -12,9 +12,8 @@ const paymentSchema = new mongoose.Schema(
       type: Number,
       trim: true,
       max: 100,
-      required: true,
     },
-    img: {
+    image: {
       type: String,
       trim: true,
     },
