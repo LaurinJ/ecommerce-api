@@ -7,9 +7,27 @@ import { personValidator } from "../../validators/person.js";
 import { addressValidator } from "../../validators/address.js";
 
 export const orderResolvers = {
-  Query: {},
+  Query: {
+    async getOrder(_, { token }) {
+      let _order = await Order.findOne({ token: token.token })
+        .populate("payment_method")
+        .populate("deliver_method")
+        .exec();
+      let _person = await Person.findById(
+        _order.person,
+        "address person_detail"
+      )
+        .populate("person_detail")
+        .populate("address");
+      // console.log(_order);
+      // console.log(_person);
+      // let a = (_order, { person: _person });
+      // console.log(_person);
+      return { order: _order, person: _person };
+    },
+  },
   Mutation: {
-    async personAdress(_, { person, address }) {
+    async createOrder(_, { person, address, order }) {
       //check person data:
       const personErrors = personValidator(person);
       //check address data:
@@ -32,21 +50,19 @@ export const orderResolvers = {
         address: _address.id,
         delivery_adress: _address.id,
       }).save();
+      let _order = await new Order({ person: _person._id, ...order }).save();
 
-      return { token: _person.token };
+      return { token: _order.token };
     },
-    async createOrder(_, { order, token }) {
-      if (!order.payment_method || !order.deliver_method) {
+    async paymentDelivery(_, { payment, delivery, token }) {
+      if (!payment._id || !delivery._id) {
         throw new UserInputError("Nebyl zadán způsob platby nebo dopravy");
       }
-      let person = await Person.findOne(token);
-      console.log(person);
-      let _order = await new Order({
-        person: person._id,
-        ...order,
-      }).save();
-
-      if (_order) {
+      let _order = await Order.findOne(token);
+      _order.payment_method = payment._id;
+      _order.deliver_method = delivery._id;
+      let up = await _order.save();
+      if (_up) {
         return { status: "ok" };
       }
       throw new Error("Něco se pokazilo");

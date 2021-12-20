@@ -1,22 +1,24 @@
 export const typeDefs = `
-  input PaymentData {
+  input DeliveryData {
     _id: ID
     name: String
+    price: Int
     hidden: Boolean
   }
 
-  type Payment {
+  type Delivery {
       _id: ID
       name: String!
       image: String
+      price: Int!
       hidden: Boolean
   }
 
   type Query {
-    getPaymentMethod: [Payment]!
+    getDeliveryMethod: [Delivery]!
   }
 
   type Mutation {
-    createPayment(payment: PaymentData!, image: Upload): Payment!
+    createDeliveryMethod(delivery: DeliveryData!, image: Upload): Delivery!
   }
 `;

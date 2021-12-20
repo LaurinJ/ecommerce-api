@@ -6,26 +6,37 @@ export const typeDefs = `
     numberDescriptive: Int!
   }
 
+  type Address {
+    village: String
+    street: String
+    postCode: Int
+    numberDescriptive: Int
+  }
+
   input PersonData {
     email: String!
     first_name: String!
     last_name: String!
     phone: Int!
+  }  
+
+  type PersonDetail {
+    email: String
+    first_name: String
+    last_name: String
+    phone: Int
   }
 
-  input PaymentMethod {
-    _id: ID!
+  type Person {
+    person_detail: PersonDetail
+    address: Address
   }
 
-  input DeliveryMethod {
-    _id: ID!
-  }
-
-  type PersonToken {
+  type OrderToken {
     token: String!
   }
 
-  input PersonTokenData {
+  input OrderTokenData {
     token: String!
   }
 
@@ -39,17 +50,40 @@ export const typeDefs = `
     img: String
   }
 
+  type Cart {
+    _id: ID
+    title: String
+    short_description: String
+    price: Int
+    old_price: Int
+    count: Int
+    img: String
+  }
+
   input OrderData {
     items: [CartData]!
     total_price: Int
-    total_qty: Int
-    payment_method: ID
-    deliver_method: ID
+  }
 
+  type Order1 {
+    items: [Cart]
+    total_price: Int
+    payment_method: Payment
+    deliver_method: Delivery
+  }
+  
+
+  type Order {
+    person: Person
+    order: Order1
+  }
+  
+  type Query {
+    getOrder(token: OrderTokenData): Order!
   }
 
   type Mutation {
-    personAdress(person: PersonData, address: AddressData): PersonToken!
-    createOrder(order: OrderData, token: PersonTokenData!): Message
+    createOrder(person: PersonData, address: AddressData, order: OrderData): OrderToken!
+    paymentDelivery(payment: PaymentData, delivery: DeliveryData, token: OrderTokenData!): Message
   }
 `;
