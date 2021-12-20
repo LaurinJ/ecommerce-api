@@ -33,11 +33,10 @@ export const typeDefs = `
     _id: ID
     title: String
     short_description: String
-    code: String
     price: Int!
     old_price: Int
-    quantity: Int
-    imgurl: String
+    count: Int
+    img: String
   }
 
   input OrderData {
