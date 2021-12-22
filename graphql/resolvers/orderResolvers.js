@@ -27,30 +27,45 @@ export const orderResolvers = {
     },
   },
   Mutation: {
-    async createOrder(_, { person, address, order }) {
+    async createOrder(_, { person, address, token }) {
       //check person data:
       const personErrors = personValidator(person);
       //check address data:
       const addressErrors = addressValidator(address);
-
+      let _order;
       if (
         Object.keys(personErrors).length !== 0 ||
         Object.keys(addressErrors).length !== 0
       ) {
-        console.log("err");
         throw new UserInputError("Invalid argument value", {
           errors: { ...personErrors, ...addressErrors },
         });
       }
-
-      let _person_detail = await new PersonDetail(person).save();
-      let _address = await new Address(address).save();
-      let _person = await new Person({
-        person_detail: _person_detail.id,
-        address: _address.id,
-        delivery_adress: _address.id,
-      }).save();
-      let _order = await new Order({ person: _person._id, ...order }).save();
+      if (token.token) {
+        _order = await Order.findOne(token).populate(
+          "person",
+          " person_detail address"
+        );
+        if (_order) {
+          let _person_detail = await PersonDetail.findOneAndUpdate(
+            { _id: _order.person.person_detail },
+            person
+          );
+          let _address = await Address.findOneAndUpdate(
+            { _id: _order.person.address },
+            address
+          );
+        }
+      } else {
+        let _person_detail = await new PersonDetail(person).save();
+        let _address = await new Address(address).save();
+        let _person = await new Person({
+          person_detail: _person_detail._id,
+          address: _address._id,
+          delivery_adress: _address._id,
+        }).save();
+        _order = await new Order({ person: _person._id }).save();
+      }
 
       return { token: _order.token };
     },
@@ -61,7 +76,7 @@ export const orderResolvers = {
       let _order = await Order.findOne(token);
       _order.payment_method = payment._id;
       _order.deliver_method = delivery._id;
-      let up = await _order.save();
+      let _up = await _order.save();
       if (_up) {
         return { status: "ok" };
       }
