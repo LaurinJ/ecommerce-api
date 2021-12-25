@@ -4,7 +4,7 @@
 // const Token = require("./token");
 
 import mongoose from "mongoose";
-import bcryptjs from "bcryptjs";
+import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { Token } from "./token.js";
 

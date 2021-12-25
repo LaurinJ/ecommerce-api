@@ -84,6 +84,7 @@ export const typeDefs = `
 
   type Mutation {
     createOrder(person: PersonData, address: AddressData, token: OrderTokenData): OrderToken!
+    finishOrder(order: OrderData, token: OrderTokenData): Message
     paymentDelivery(payment: PaymentData, delivery: DeliveryData, token: OrderTokenData!): Message
   }
 `;

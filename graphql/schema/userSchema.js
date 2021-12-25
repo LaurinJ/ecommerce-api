@@ -1,7 +1,7 @@
 export const typeDefs = `
   type Message {
-    status: String
-    text: String
+    status: Int
+    message: String
   }
 
   type User {

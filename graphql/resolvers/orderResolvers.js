@@ -78,9 +78,24 @@ export const orderResolvers = {
       _order.deliver_method = delivery._id;
       let _up = await _order.save();
       if (_up) {
-        return { status: "ok" };
+        return { status: 204 };
       }
       throw new Error("Něco se pokazilo");
+    },
+    async finishOrder(_, { order, token }) {
+      let _order;
+
+      if (token.token) {
+        _order = await Order.findOne(token);
+        if (_order && order) {
+          _order.total_price = order.total_price;
+          _order.items = order.items;
+          _order.state = "created";
+          _order = await _order.save();
+          return { status: 201, message: "Objednávka úspěšně dokončena" };
+        }
+      }
+      return { status: 400, message: "Něco se pokazilo" };
     },
   },
 };

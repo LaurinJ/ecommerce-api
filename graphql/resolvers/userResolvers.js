@@ -79,7 +79,7 @@ export const userResolvers = {
         //delete the refresh token saved in database:
         const { refreshToken } = token;
         await Token.findOneAndDelete({ token: refreshToken });
-        return { status: "success", text: "Byl si úspěšně odhlášen" };
+        return { status: 204, message: "Byl si úspěšně odhlášen" };
       } catch (error) {
         console.error(error);
         throw new ApolloError(error.message, 401);
