@@ -1,17 +1,5 @@
-// const { GraphQLUpload } = require("graphql-upload");
-// const Product = require("../../models/product");
-// const Category = require("../../models/category");
-// const slugify = require("slugify");
-// const {
-//   multipleUpload,
-//   downloadFile,
-//   multiDownload,
-//   uploadProcess,
-// } = require("../../helpers/image");
-
-// const { chillfeed } = require("../../chillfeed");
-
 import { GraphQLUpload } from "graphql-upload";
+import escapeStringRegexp from "escape-string-regexp";
 import { Product } from "../../models/product.js";
 import { Category } from "../../models/category.js";
 import slugify from "slugify";
@@ -104,6 +92,14 @@ export const productResolvers = {
       const count = await Product.estimatedDocumentCount();
       const pages = Math.round(count / 12);
       return { pages: pages };
+    },
+    async getFilterProducts(_, { params }) {
+      if (params.title.length) {
+        const regex = escapeStringRegexp(params.title);
+        const products = await Product.find({ title: { $regex: regex } });
+        return products;
+      }
+      return [];
     },
   },
   Mutation: {
