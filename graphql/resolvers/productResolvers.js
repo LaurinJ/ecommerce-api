@@ -58,25 +58,25 @@ export const productResolvers = {
       return product;
     },
 
-    async getProducts(_, { limit = 12, skip = 0 }) {
+    async getProducts(_, { limit = 12, skip = 0, query }) {
       const page = skip <= 1 ? 0 : skip * limit - 12;
-      const products = await Product.find({})
-        // .populate("categories")
-        .skip(page)
-        .limit(limit);
+      let products;
+      if (query) {
+        const regex = escapeStringRegexp(query);
+        products = await Product.find({ title: { $regex: regex } })
+          // .populate("categories")
+          .skip(page)
+          .limit(limit);
+      } else {
+        products = await Product.find({})
+          // .populate("categories")
+          .skip(page)
+          .limit(limit);
+      }
       if (products.length === 0) {
         throw new Error("Nebyli nalezené žádné produkty");
       }
       return [...products];
-      // return {
-      //   product: products.map((p) => {
-      //     return {
-      //       ...p._doc,
-      //       createdAt: p.createdAt.toISOString(),
-      //       updatedAt: p.updatedAt.toISOString(),
-      //     };
-      //   }),
-      // };
     },
     async getProduct(_, { slug }) {
       const product = await Product.findOne({ slug: slug }).populate(
@@ -88,17 +88,29 @@ export const productResolvers = {
       }
       return product;
     },
-    async getCountPages() {
-      const count = await Product.estimatedDocumentCount();
+    async getCountPages(_, { query }) {
+      let count;
+      if (query) {
+        const regex = escapeStringRegexp(query);
+        count = await Product.find({
+          title: { $regex: regex },
+        }).countDocuments();
+      } else {
+        count = await Product.estimatedDocumentCount();
+      }
       const pages = Math.round(count / 12);
       return { pages: pages };
     },
-    async getFilterProducts(_, { params }) {
-      if (params.title.length) {
+    async getFilterProducts(_, { limit = 12, skip = 0, params }) {
+      const page = skip <= 1 ? 0 : skip * limit - 12;
+      if (params.title) {
         const regex = escapeStringRegexp(params.title);
-        const products = await Product.find({ title: { $regex: regex } });
+        const products = await Product.find({ title: { $regex: regex } })
+          .skip(page)
+          .limit(limit);
         return products;
       }
+      // const products = await Product.find({}).skip(page).limit(limit);
       return [];
     },
   },

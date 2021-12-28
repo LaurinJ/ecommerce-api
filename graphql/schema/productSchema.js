@@ -56,9 +56,9 @@ export const typeDefs = `
   type Query {
     testmultisave: Product!
     getProduct(slug: String!): Product!
-    getProducts(limit: Int, skip: Int): [Product]
-    getCountPages: CountPages!
-    getFilterProducts(params: FilterData): [Product]
+    getProducts(limit: Int, skip: Int, query: String): [Product]
+    getCountPages(query: String): CountPages!
+    getFilterProducts(params: FilterData, limit: Int, skip: Int): [Product]
   }
 
   type Mutation {
