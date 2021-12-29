@@ -75,7 +75,6 @@ userSchema.pre("save", async function (next) {
   try {
     let salt = await bcrypt.genSalt(12); // generate hash salt of 12 rounds
     let hashedPassword = await bcrypt.hash(this.password, salt); // hash the current user's password
-    console.log(hashedPassword);
     this.password = hashedPassword;
   } catch (error) {
     console.error(error);
