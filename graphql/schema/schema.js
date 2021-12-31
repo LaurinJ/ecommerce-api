@@ -3,7 +3,7 @@ import { typeDefs as userSchema } from "./userSchema.js";
 import { typeDefs as productSchema } from "./productSchema.js";
 import { typeDefs as paymentSchema } from "./paymentSchema.js";
 import { typeDefs as deliverySchema } from "./deliverySchema.js";
-import { typeDefs as chatSchema } from "./chatSchema.js";
+import { typeDefs as messageSchema } from "./messageSchema.js";
 
 export const schema = [
   productSchema,
@@ -11,5 +11,5 @@ export const schema = [
   orderSchema,
   paymentSchema,
   deliverySchema,
-  chatSchema,
+  messageSchema,
 ];
