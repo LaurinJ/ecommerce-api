@@ -8,8 +8,6 @@ import jwt from "jsonwebtoken";
 import { User } from "../../models/user.js";
 import { Token } from "../../models/token.js";
 
-import { pubsub } from "./chatResolvers.js";
-
 export const userResolvers = {
   Query: {},
   Mutation: {

@@ -131,7 +131,6 @@ export const productResolvers = {
       let imagesData = await multipleUpload(images);
 
       const cat = await Category.find({ name: product.categories }).exec();
-      console.log(cat);
 
       const newProduct = new Product({
         ...product,

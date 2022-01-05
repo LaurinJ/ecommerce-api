@@ -1,10 +1,9 @@
 export const typeDefs = `
   type Subscription {
-    userReg: User
+    shareMessage: ChatMessage
   }
 
   input MessageData {
-    _id: ID
     from: String
     to: String
     content: String
@@ -15,6 +14,7 @@ export const typeDefs = `
     from: String
     to: String
     content: String
+    createdAt: String
   }
 
   type Query {
