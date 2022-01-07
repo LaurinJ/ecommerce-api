@@ -42,7 +42,7 @@ userSchema.methods = {
         { user: { _id, name } },
         process.env.ACCESS_TOKEN_SECRET,
         {
-          expiresIn: "10m",
+          expiresIn: "1d",
         }
       );
       return accessToken;

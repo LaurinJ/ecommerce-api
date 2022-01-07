@@ -15,7 +15,6 @@ export const pubsub = new PubSub();
 export const chatResolvers = {
   Query: {
     async getMessages(_, { id }) {
-      console.log(id);
       if (id) {
         const _messages = Message.find({
           $or: [{ to: id }, { from: id }],
@@ -27,6 +26,7 @@ export const chatResolvers = {
   },
   Mutation: {
     async sendMessage(_, { message }) {
+      // console.log(c);
       const newMessage = new Message({ ...message });
 
       const data = await newMessage.save();
@@ -38,8 +38,8 @@ export const chatResolvers = {
     shareMessage: {
       subscribe: withFilter(
         () => pubsub.asyncIterator(["SHARE_MESSAGE"]),
-        ({ shareMessage }) => {
-          if (shareMessage.to === to) {
+        ({ shareMessage }, _, { chatid }) => {
+          if (shareMessage.to === chatid || shareMessage.from === chatid) {
             return true;
           }
           return false;

@@ -10,6 +10,7 @@ import { resolvers } from "./graphql/resolvers/index.js";
 import { graphqlUploadExpress } from "graphql-upload";
 import mongoose from "mongoose";
 import cors from "cors";
+import { contextMiddleware } from "./helpers/contextMiddleware.js";
 
 const schema = makeExecutableSchema({ typeDefs, resolvers });
 
@@ -23,14 +24,26 @@ async function startApolloServer() {
   const httpServer = http.createServer(app);
 
   const subscriptionServer = SubscriptionServer.create(
-    { schema, execute, subscribe },
+    {
+      schema,
+      execute,
+      subscribe,
+      onConnect: (connectionParams, webSocket) => {
+        // console.log(connectionParams);
+        return connectionParams;
+      },
+    },
     { server: httpServer, path: "/graphql" }
   );
 
   const server = new ApolloServer({
     schema,
     cors: cors(corsOptions),
-    context: ({ req }) => ({ header: req.headers }),
+    // context: (connectionParams) => {
+    //   console.log("con", connectionParams);
+    // },
+    context: contextMiddleware,
+
     plugins: [
       {
         async serverWillStart() {
@@ -62,10 +75,5 @@ async function startApolloServer() {
       `Server is now running on http://localhost:${process.env.PORT}/graphql`
     )
   );
-
-  // await new Promise((resolve) => app.listen({ port: 4000 }, resolve));
-  // console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`);
-  // return { server, app };
 }
-
 startApolloServer();

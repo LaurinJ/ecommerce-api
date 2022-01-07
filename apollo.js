@@ -5,6 +5,7 @@ import { resolvers } from "./graphql/resolvers/index.js";
 import { graphqlUploadExpress } from "graphql-upload";
 import mongoose from "mongoose";
 import cors from "cors";
+import { contextMiddleware } from "./helpers/contextMiddleware";
 
 export async function startApolloServer() {
   const corsOptions = {
@@ -15,7 +16,7 @@ export async function startApolloServer() {
     typeDefs,
     resolvers,
     cors: cors(corsOptions),
-    context: ({ req }) => ({ header: req.headers }),
+    context: contextMiddleware,
   });
   await server.start();
 
