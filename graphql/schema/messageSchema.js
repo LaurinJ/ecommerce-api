@@ -1,6 +1,7 @@
 export const typeDefs = `
   type Subscription {
     shareMessage: ChatMessage
+    adminOnline: AdminChatToken
   }
 
   input MessageData {
@@ -17,11 +18,18 @@ export const typeDefs = `
     createdAt: String
   }
 
+  type AdminChatToken {
+    token: String
+  }
+
   type Query {
     getMessages(id:String): [ChatMessage]!
+    getAdminToken: AdminChatToken
   }
 
   type Mutation {
     sendMessage(message: MessageData!): ChatMessage!
+    setAdminToken(token: String!): AdminChatToken!
+    deleteAdminToken(token: String!): AdminChatToken
   }
 `;

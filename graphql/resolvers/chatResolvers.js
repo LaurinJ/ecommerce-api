@@ -5,7 +5,7 @@ import {
 } from "apollo-server-express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { User } from "../../models/user.js";
+import { AdminChatToken } from "../../models/adminChatToken.js";
 import { Message } from "../../models/message.js";
 import { withFilter } from "graphql-subscriptions";
 import { PubSub } from "graphql-subscriptions";
@@ -23,15 +23,35 @@ export const chatResolvers = {
       }
       return [];
     },
+    async getAdminToken() {
+      const adminToken = AdminChatToken.findOne({});
+      return adminToken;
+    },
   },
   Mutation: {
     async sendMessage(_, { message }) {
-      // console.log(c);
       const newMessage = new Message({ ...message });
 
       const data = await newMessage.save();
       pubsub.publish("SHARE_MESSAGE", { shareMessage: data });
       return data._doc;
+    },
+    async setAdminToken(_, { token }) {
+      if (token) {
+        const adminToken = new AdminChatToken({ token: token });
+        const data = await adminToken.save();
+        pubsub.publish("ADMIN_ONLINE", { adminOnline: data });
+        return data;
+      }
+      throw new UserInputError("Neplatný token!");
+    },
+    async deleteAdminToken(_, { token }) {
+      if (token) {
+        const adminToken = AdminChatToken.findOneAndDelete({ token: token });
+        pubsub.publish("ADMIN_ONLINE", { adminOnline: null });
+        return adminToken;
+      }
+      throw new UserInputError("Neplatný token!");
     },
   },
   Subscription: {
@@ -45,6 +65,9 @@ export const chatResolvers = {
           return false;
         }
       ),
+    },
+    adminOnline: {
+      subscribe: () => pubsub.asyncIterator(["ADMIN_ONLINE"]),
     },
   },
 };
