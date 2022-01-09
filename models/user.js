@@ -37,9 +37,9 @@ const userSchema = new mongoose.Schema(
 userSchema.methods = {
   createAccessToken: async function () {
     try {
-      let { _id, name } = this;
+      let { _id, name, role } = this;
       let accessToken = jwt.sign(
-        { user: { _id, name } },
+        { user: { _id, name, role } },
         process.env.ACCESS_TOKEN_SECRET,
         {
           expiresIn: "1d",
@@ -53,9 +53,9 @@ userSchema.methods = {
   },
   createRefreshToken: async function () {
     try {
-      let { _id, name } = this;
+      let { _id, name, role } = this;
       let refreshToken = jwt.sign(
-        { user: { _id, name } },
+        { user: { _id, name, role } },
         process.env.REFRESH_TOKEN_SECRET,
         {
           expiresIn: "1d",
