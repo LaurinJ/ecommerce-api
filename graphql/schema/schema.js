@@ -4,6 +4,7 @@ import { typeDefs as productSchema } from "./productSchema.js";
 import { typeDefs as paymentSchema } from "./paymentSchema.js";
 import { typeDefs as deliverySchema } from "./deliverySchema.js";
 import { typeDefs as messageSchema } from "./messageSchema.js";
+import { typeDefs as categorySchema } from "./categorySchema.js";
 
 export const schema = [
   productSchema,
@@ -12,4 +13,5 @@ export const schema = [
   paymentSchema,
   deliverySchema,
   messageSchema,
+  categorySchema,
 ];

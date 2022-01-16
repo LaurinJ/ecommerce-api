@@ -14,6 +14,10 @@ const categotySchema = new mongoose.Schema(
       index: true,
       max: 32,
     },
+    hidden: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamp: true }
 );

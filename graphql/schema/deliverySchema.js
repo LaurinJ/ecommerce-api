@@ -15,10 +15,12 @@ export const typeDefs = `
   }
 
   type Query {
-    getDeliveryMethod: [Delivery]!
+    getDeliveryMethod(id: String): Delivery
+    getDeliveryMethods(limit: Int, skip: Int): [Delivery]!
   }
 
   type Mutation {
     createDeliveryMethod(delivery: DeliveryData!, image: Upload): Delivery!
+    editDeliveryMethod(delivery: DeliveryData!, image: Upload): Delivery!
   }
 `;

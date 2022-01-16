@@ -13,10 +13,12 @@ export const typeDefs = `
   }
 
   type Query {
-    getPaymentMethod: [Payment]!
+    getPaymentMethod(id: String): Payment
+    getPaymentMethods(limit: Int, skip: Int): [Payment]!
   }
 
   type Mutation {
     createPayment(payment: PaymentData!, image: Upload): Payment!
+    editPayment(payment: PaymentData!, image: Upload): Payment!
   }
 `;

@@ -4,6 +4,7 @@ import { orderResolvers } from "./orderResolvers.js";
 import { paymentResolvers } from "./paymentResolvers.js";
 import { deliveryResolvers } from "./deliveryResolvers.js";
 import { chatResolvers } from "./chatResolvers.js";
+import { categoryResolvers } from "./categoryResolvers.js";
 
 export const resolvers = {
   Query: {
@@ -13,6 +14,7 @@ export const resolvers = {
     ...paymentResolvers.Query,
     ...deliveryResolvers.Query,
     ...chatResolvers.Query,
+    ...categoryResolvers.Query,
   },
   Mutation: {
     ...productResolvers.Mutation,
@@ -21,6 +23,7 @@ export const resolvers = {
     ...paymentResolvers.Mutation,
     ...deliveryResolvers.Mutation,
     ...chatResolvers.Mutation,
+    ...categoryResolvers.Mutation,
   },
   Subscription: {
     ...chatResolvers.Subscription,
