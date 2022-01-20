@@ -1,4 +1,5 @@
 import { GraphQLUpload } from "graphql-upload";
+import { UserInputError } from "apollo-server-express";
 import escapeStringRegexp from "escape-string-regexp";
 import { Product } from "../../models/product.js";
 import { Category } from "../../models/category.js";
@@ -10,6 +11,7 @@ import {
   uploadProcess,
 } from "../../helpers/image.js";
 import { chillfeed } from "../../chillfeed.js";
+import { productValidator } from "../../validators/product.js";
 
 export const productResolvers = {
   Upload: GraphQLUpload,
@@ -116,32 +118,32 @@ export const productResolvers = {
   },
   Mutation: {
     async createProduct(_, { product, images }) {
-      if (!product.title || !product.title.length) {
-        throw new Error("Title je poviný");
+      //check product data:
+      const productErrors = productValidator(product);
+      if (Object.keys(productErrors).length !== 0) {
+        throw new UserInputError("Invalid argument value", {
+          errors: { ...productErrors },
+        });
       }
 
-      if (!product.description || !product.description.length) {
-        throw new Error("Chybí popis produktu");
-      }
+      // let imagesData = await multipleUpload(images);
 
-      if (!product.price) {
-        throw new Error("Chybí cena produktu");
-      }
+      const cat = await Category.find({
+        _id: { $in: product.categories },
+      }).exec();
+      console.log(cat);
+      // const newProduct = new Product({
+      //   ...product,
+      // imgurl: imagesData[0]
+      //   images: imagesData,
+      //   categories: cat,
+      //   slug: slugify(product.title),
+      // });
 
-      let imagesData = await multipleUpload(images);
+      // const data = await newProduct.save();
 
-      const cat = await Category.find({ name: product.categories }).exec();
-
-      const newProduct = new Product({
-        ...product,
-        images: imagesData,
-        categories: cat,
-        slug: slugify(product.title),
-      });
-
-      const data = await newProduct.save();
-
-      return data._doc;
+      return product;
+      // return data._doc;
     },
   },
 };

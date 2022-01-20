@@ -31,8 +31,10 @@ export const typeDefs = `
     price: Int!
     old_price: Int
     countInStock: Int
+    hidden: Boolean
+    categories: [ID]
   }
-
+  
   type ProductData {
     product: [Product!]!
   }
@@ -43,10 +45,6 @@ export const typeDefs = `
 
   input FilterData {
     title: String
-  }
-
-  type Category {
-    name: String
   }
 
   type CountPages {
