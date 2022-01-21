@@ -125,25 +125,24 @@ export const productResolvers = {
           errors: { ...productErrors },
         });
       }
-
-      // let imagesData = await multipleUpload(images);
+      // let imagesData = await uploadProcess(images[0]);
+      let imagesData = await multipleUpload(images);
 
       const cat = await Category.find({
         _id: { $in: product.categories },
       }).exec();
-      console.log(cat);
-      // const newProduct = new Product({
-      //   ...product,
-      // imgurl: imagesData[0]
-      //   images: imagesData,
-      //   categories: cat,
-      //   slug: slugify(product.title),
-      // });
+      const newProduct = new Product({
+        ...product,
+        imgurl: imagesData.filename,
+        images: imagesData,
+        categories: cat,
+        slug: slugify(product.title),
+      });
 
-      // const data = await newProduct.save();
+      const data = await newProduct.save();
 
-      return product;
-      // return data._doc;
+      // return product;
+      return data._doc;
     },
   },
 };

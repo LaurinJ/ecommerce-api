@@ -23,8 +23,8 @@ export const typeDefs = `
   }
 
   input ProductInputData {
+    _id: ID
     title: String!
-    slug: String
     description: String
     short_description: String
     code: String

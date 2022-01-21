@@ -9,6 +9,7 @@ import path from "path";
 import axios from "axios";
 
 export async function uploadProcess(file, path) {
+  console.log("file je", file);
   const { createReadStream, filename, mimetype, encoding } = await file.file;
   const stream = createReadStream();
   const imageName = Date.now() + filename;
@@ -25,7 +26,7 @@ export async function uploadProcess(file, path) {
 }
 
 export async function multipleUpload(files) {
-  const promises = await (await Promise.all(files)).map(uploadProcess);
+  const promises = (await Promise.all(files)).map(uploadProcess);
   const images = await Promise.all(promises.map((data) => data));
   return images;
 }

@@ -18,7 +18,7 @@ export function productValidator(product) {
   if (!product.countInStock) {
     errors.countInStock = "Toto pole je povinné";
   }
-  if (!product.categories) {
+  if (!product.categories || product.categories.length === 0) {
     errors.categories = "Toto pole je povinné";
   }
   return errors;
