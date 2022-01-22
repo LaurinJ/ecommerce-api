@@ -82,8 +82,8 @@ export const productResolvers = {
     },
     async getProduct(_, { slug }) {
       const product = await Product.findOne({ slug: slug }).populate(
-        // "categories",
-        "-__v -_id"
+        "categories",
+        "-__v"
       );
       if (!product) {
         throw new Error("Produkt nebyl nalezen");
@@ -125,15 +125,16 @@ export const productResolvers = {
           errors: { ...productErrors },
         });
       }
-      // let imagesData = await uploadProcess(images[0]);
       let imagesData = await multipleUpload(images);
+
+      delete product._id;
 
       const cat = await Category.find({
         _id: { $in: product.categories },
       }).exec();
       const newProduct = new Product({
         ...product,
-        imgurl: imagesData.filename,
+        imgurl: imagesData[0],
         images: imagesData,
         categories: cat,
         slug: slugify(product.title),
@@ -141,8 +142,33 @@ export const productResolvers = {
 
       const data = await newProduct.save();
 
-      // return product;
       return data._doc;
+    },
+    async editProduct(_, { product, images }) {
+      //check product data:
+      const productErrors = productValidator(product);
+      if (Object.keys(productErrors).length !== 0) {
+        throw new UserInputError("Invalid argument value", {
+          errors: { ...productErrors },
+        });
+      }
+
+      // let imagesData = await multipleUpload(images);
+
+      const cat = await Category.find({
+        _id: { $in: product.categories },
+      }).exec();
+      const newProduct = Product.findByIdAndUpdate(
+        { _id: product._id },
+        {
+          ...product,
+          categories: cat,
+          slug: slugify(product.title),
+        }
+      );
+
+      // return product;
+      return newProduct;
     },
   },
 };

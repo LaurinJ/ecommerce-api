@@ -4,12 +4,12 @@
 // const axios = require("axios");
 
 import fs from "fs";
-import { finished } from "stream";
+import { finished } from "stream/promises";
 import path from "path";
 import axios from "axios";
 
-export async function uploadProcess(file, path) {
-  console.log("file je", file);
+export async function uploadProcess(file, path = "") {
+  await file.promise;
   const { createReadStream, filename, mimetype, encoding } = await file.file;
   const stream = createReadStream();
   const imageName = Date.now() + filename;
@@ -22,11 +22,13 @@ export async function uploadProcess(file, path) {
   const out = fs.createWriteStream(_path);
   stream.pipe(out);
   _path = path + imageName;
-  return { _path, filename };
+  return _path;
 }
 
 export async function multipleUpload(files) {
-  const promises = (await Promise.all(files)).map(uploadProcess);
+  const promises = (await Promise.all(files)).map((file) =>
+    uploadProcess(file)
+  );
   const images = await Promise.all(promises.map((data) => data));
   return images;
 }
