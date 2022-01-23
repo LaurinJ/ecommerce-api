@@ -12,6 +12,7 @@ import {
 } from "../../helpers/image.js";
 import { chillfeed } from "../../chillfeed.js";
 import { productValidator } from "../../validators/product.js";
+import { productsFilter } from "../../helpers/productsFilter.js";
 
 export const productResolvers = {
   Upload: GraphQLUpload,
@@ -90,30 +91,27 @@ export const productResolvers = {
       }
       return product;
     },
-    async getCountPages(_, { query }) {
-      let count;
-      if (query) {
-        const regex = escapeStringRegexp(query);
-        count = await Product.find({
-          title: { $regex: regex },
-        }).countDocuments();
-      } else {
-        count = await Product.estimatedDocumentCount();
-      }
-      const pages = Math.round(count / 12);
-      return { pages: pages };
+
+    async getCountProducts() {
+      const count = await Product.find({}).countDocuments();
+      return { count: count };
     },
-    async getFilterProducts(_, { limit = 12, skip = 0, params }) {
-      const page = skip <= 1 ? 0 : skip * limit - 12;
-      if (params.title) {
-        const regex = escapeStringRegexp(params.title);
-        const products = await Product.find({ title: { $regex: regex } })
-          .skip(page)
-          .limit(limit);
-        return products;
+
+    async getFilterProducts(_, { limit = 12, skip = 1, params }) {
+      const page = (skip - 1) * 12;
+      if (params && Object.keys(params).length !== 0) {
+        const _params = productsFilter(params);
+        const count = await Product.find(_params).countDocuments();
+        const pages = Math.round(count / 12);
+
+        const products = count
+          ? await Product.find(_params).skip(page).limit(limit)
+          : [];
+        return { products: products, pages: pages };
       }
+
       // const products = await Product.find({}).skip(page).limit(limit);
-      return [];
+      return { products: [], pages: 0 };
     },
   },
   Mutation: {

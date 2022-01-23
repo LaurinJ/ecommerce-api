@@ -45,18 +45,26 @@ export const typeDefs = `
 
   input FilterData {
     title: String
+    category: ID
+    min_price: Int
+    max_price: Int
   }
 
-  type CountPages {
-    pages: Int!
+  type FilterProducts{
+    products: [Product]
+    pages: Int
+  }
+
+  type CountProducts {
+    count: Int!
   }
 
   type Query {
     testmultisave: Product!
     getProduct(slug: String!): Product!
     getProducts(limit: Int, skip: Int, query: String): [Product]
-    getCountPages(query: String): CountPages!
-    getFilterProducts(params: FilterData, limit: Int, skip: Int): [Product]
+    getCountProducts: CountProducts!
+    getFilterProducts(params: FilterData, limit: Int, skip: Int): FilterProducts
   }
 
   type Mutation {
