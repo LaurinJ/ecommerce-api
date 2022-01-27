@@ -81,6 +81,7 @@ export const productResolvers = {
       }
       return [...products];
     },
+
     async getProduct(_, { slug }) {
       const product = await Product.findOne({ slug: slug }).populate(
         "categories",
@@ -98,16 +99,17 @@ export const productResolvers = {
     },
 
     async getFilterProducts(_, { limit = 12, skip = 1, params }) {
-      const page = (skip - 1) * 12;
+      const page = (skip - 1) * 10;
       if (params && Object.keys(params).length !== 0) {
         const _params = productsFilter(params);
         const count = await Product.find(_params).countDocuments();
-        const pages = Math.round(count / 12);
+        const pages = Math.ceil(count / 10);
 
         const products = count
           ? await Product.find(_params).skip(page).limit(limit)
           : [];
         return { products: products, pages: pages };
+        // return products;
       }
 
       // const products = await Product.find({}).skip(page).limit(limit);
@@ -142,6 +144,7 @@ export const productResolvers = {
 
       return data._doc;
     },
+
     async editProduct(_, { product, images }) {
       //check product data:
       const productErrors = productValidator(product);
