@@ -5,6 +5,7 @@ import { PersonDetail } from "../../models/personDetail.js";
 import { Order } from "../../models/order.js";
 import { personValidator } from "../../validators/person.js";
 import { addressValidator } from "../../validators/address.js";
+import { ordersFilter } from "../../helpers/ordersFilter.js";
 
 export const orderResolvers = {
   Query: {
@@ -19,15 +20,32 @@ export const orderResolvers = {
       )
         .populate("person_detail")
         .populate("address");
-      // console.log(_order);
-      // console.log(_person);
-      // let a = (_order, { person: _person });
-      // console.log(_person);
       return { order: _order, person: _person };
+    },
+    async getOrders(_, { limit = 12, skip = 1, params }) {
+      const page = (skip - 1) * limit;
+      if (params && Object.keys(params).length !== 0) {
+        const _params = ordersFilter(params);
+        const count = await Order.find(_params).countDocuments();
+        const pages = Math.ceil(count / 10);
+
+        const orders = count
+          ? await Order.find(_params)
+              .populate("payment_method")
+              .populate("deliver_method")
+              .populate("person")
+              .skip(page)
+              .limit(limit)
+          : [];
+        return { orders: orders, pages: pages };
+        // return orders;
+      }
+      // const orders = await Product.find({}).skip(page).limit(limit);
+      return { orders: [], pages: 0 };
     },
   },
   Mutation: {
-    async createOrder(_, { person, address, token }) {
+    async createOrUpdateOrder(_, { person, address, token }) {
       //check person data:
       const personErrors = personValidator(person);
       //check address data:
@@ -77,10 +95,7 @@ export const orderResolvers = {
       _order.payment_method = payment._id;
       _order.deliver_method = delivery._id;
       let _up = await _order.save();
-      if (_up) {
-        return { status: 204 };
-      }
-      throw new Error("Něco se pokazilo");
+      return { status: 204 };
     },
     async finishOrder(_, { order, token }) {
       let _order;
@@ -88,6 +103,7 @@ export const orderResolvers = {
       if (token.token) {
         _order = await Order.findOne(token);
         if (_order && order) {
+          _order.orderNumber = Date.now();
           _order.total_price = order.total_price;
           _order.items = order.items;
           _order.state = "created";
@@ -95,7 +111,7 @@ export const orderResolvers = {
           return { status: 201, message: "Objednávka úspěšně dokončena" };
         }
       }
-      return { status: 400, message: "Něco se pokazilo" };
+      return { status: 400, message: "Nepodařilo se najít objednávku" };
     },
   },
 };

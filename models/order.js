@@ -9,6 +9,9 @@ const orderSchema = new mongoose.Schema(
       ref: "Person",
       required: true,
     },
+    orderNumber: {
+      type: Number,
+    },
     items: [],
     total_price: {
       type: Number,
@@ -54,17 +57,21 @@ const orderSchema = new mongoose.Schema(
     },
     token: {
       type: String,
-      required: true,
+      default: null,
+      // required: true,
     },
   },
 
   { timestamps: true }
 );
 
-orderSchema.pre("validate", async function (next) {
+orderSchema.pre("save", async function (next) {
   try {
-    let token = await crypto.createHmac("sha256", "key321").digest("hex"); // generate token
-    this.token = token;
+    if (!this.token) {
+      const date = Date.now().toString();
+      let token = crypto.createHmac("sha256", date).digest("hex"); // generate token
+      this.token = token;
+    }
   } catch (error) {
     console.error(error);
   }

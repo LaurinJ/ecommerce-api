@@ -64,7 +64,7 @@ export const typeDefs = `
     getProduct(slug: String!): Product!
     getProducts(limit: Int, skip: Int, query: String): [Product]
     getCountProducts: CountProducts!
-    getFilterProducts(params: FilterData, limit: Int, skip: Int): FilterProducts
+    getFilterProducts(params: FilterData, limit: Int, skip: Int): FilterProducts!
   }
 
   type Mutation {

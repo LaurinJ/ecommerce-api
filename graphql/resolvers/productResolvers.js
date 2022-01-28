@@ -8,7 +8,6 @@ import {
   multipleUpload,
   downloadFile,
   multiDownload,
-  uploadProcess,
 } from "../../helpers/image.js";
 import { chillfeed } from "../../chillfeed.js";
 import { productValidator } from "../../validators/product.js";
@@ -99,7 +98,7 @@ export const productResolvers = {
     },
 
     async getFilterProducts(_, { limit = 12, skip = 1, params }) {
-      const page = (skip - 1) * 10;
+      const page = (skip - 1) * limit;
       if (params && Object.keys(params).length !== 0) {
         const _params = productsFilter(params);
         const count = await Product.find(_params).countDocuments();

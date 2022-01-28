@@ -61,30 +61,41 @@ export const typeDefs = `
   }
 
   input OrderData {
-    items: [CartData]!
+    items: [CartData!]!
     total_price: Int
   }
 
-  type Order1 {
+  type Order {
     items: [Cart]
     total_price: Int
+    person: Person
     payment_method: Payment
     deliver_method: Delivery
+    state: String
+    orderNumber: Int
+    is_paid: Boolean
+    is_deliver: Boolean
+    createdAt: String
   }
   
 
-  type Order {
-    person: Person
-    order: Order1
+  type Orders {
+    orders: [Order]
+    pages: Int
+  }
+
+  input FilterOrderData {
+    numberOrder: Int
   }
   
   type Query {
     getOrder(token: OrderTokenData): Order!
+    getOrders(params: FilterOrderData, limit: Int, skip: Int): Orders!
   }
 
   type Mutation {
-    createOrder(person: PersonData, address: AddressData, token: OrderTokenData): OrderToken!
-    finishOrder(order: OrderData, token: OrderTokenData): Message
+    createOrUpdateOrder(person: PersonData, address: AddressData, token: OrderTokenData): OrderToken!
     paymentDelivery(payment: PaymentData, delivery: DeliveryData, token: OrderTokenData!): Message
+    finishOrder(order: OrderData, token: OrderTokenData): Message
   }
 `;
