@@ -10,7 +10,8 @@ const orderSchema = new mongoose.Schema(
       required: true,
     },
     orderNumber: {
-      type: Number,
+      type: String,
+      trim: true,
     },
     items: [],
     total_price: {

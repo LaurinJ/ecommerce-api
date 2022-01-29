@@ -74,7 +74,9 @@ export const typeDefs = `
     state: String
     orderNumber: Int
     is_paid: Boolean
+    paid_at: String
     is_deliver: Boolean
+    delivered_at: String
     createdAt: String
   }
   
@@ -85,11 +87,11 @@ export const typeDefs = `
   }
 
   input FilterOrderData {
-    numberOrder: Int
+    numberOrder: String
   }
   
   type Query {
-    getOrder(token: OrderTokenData): Order!
+    getOrder(orderNumber: String): Order!
     getOrders(params: FilterOrderData, limit: Int, skip: Int): Orders!
   }
 

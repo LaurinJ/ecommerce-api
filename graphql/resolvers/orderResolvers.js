@@ -9,8 +9,8 @@ import { ordersFilter } from "../../helpers/ordersFilter.js";
 
 export const orderResolvers = {
   Query: {
-    async getOrder(_, { token }) {
-      let _order = await Order.findOne({ token: token.token })
+    async getOrder(_, { orderNumber }) {
+      let _order = await Order.findOne({ orderNumber: orderNumber })
         .populate("payment_method")
         .populate("deliver_method")
         .exec();
@@ -20,7 +20,7 @@ export const orderResolvers = {
       )
         .populate("person_detail")
         .populate("address");
-      return { order: _order, person: _person };
+      return { ..._order._doc, person: _person };
     },
     async getOrders(_, { limit = 12, skip = 1, params }) {
       const page = (skip - 1) * limit;
