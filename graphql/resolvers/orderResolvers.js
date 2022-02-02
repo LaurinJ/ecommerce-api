@@ -5,6 +5,7 @@ import { PersonDetail } from "../../models/personDetail.js";
 import { Order } from "../../models/order.js";
 import { personValidator } from "../../validators/person.js";
 import { addressValidator } from "../../validators/address.js";
+import { orderValidator } from "../../validators/order.js";
 import { ordersFilter } from "../../helpers/ordersFilter.js";
 
 export const orderResolvers = {
@@ -112,6 +113,51 @@ export const orderResolvers = {
         }
       }
       return { status: 400, message: "Nepodařilo se najít objednávku" };
+    },
+    async editOrder(
+      _,
+      { person, address, orderNumber, payment, delivery, order }
+    ) {
+      //check person data:
+      const personErrors = personValidator(person);
+      //check address data:
+      const addressErrors = addressValidator(address);
+      //check order data:
+      const orderErrors = orderValidator(order);
+      if (
+        Object.keys(personErrors).length !== 0 ||
+        Object.keys(addressErrors).length !== 0 ||
+        Object.keys(orderErrors).length !== 0
+      ) {
+        throw new UserInputError("Invalid argument value", {
+          errors: { ...personErrors, ...addressErrors, ...orderErrors },
+        });
+      }
+      if (orderNumber) {
+        let _order;
+        _order = await Order.findOne({ orderNumber: orderNumber }).populate(
+          "person",
+          " person_detail address"
+        );
+        if (_order) {
+          let _person_detail = await PersonDetail.findOneAndUpdate(
+            { _id: _order.person.person_detail },
+            person
+          );
+          let _address = await Address.findOneAndUpdate(
+            { _id: _order.person.address },
+            address
+          );
+          _order.payment_method = order.payment;
+          _order.deliver_method = order.delivery;
+          _order.total_price = order.total_price;
+          _order.items = order.items;
+
+          _order = await _order.save();
+
+          return _order;
+        }
+      }
     },
   },
 };

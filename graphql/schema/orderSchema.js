@@ -65,6 +65,13 @@ export const typeDefs = `
     total_price: Int
   }
 
+  input EditOrderData {
+    items: [CartData!]!
+    total_price: Int
+    payment: String
+    delivery: String
+  }
+
   type Order {
     items: [Cart]
     total_price: Int
@@ -99,5 +106,6 @@ export const typeDefs = `
     createOrUpdateOrder(person: PersonData, address: AddressData, token: OrderTokenData): OrderToken!
     paymentDelivery(payment: PaymentData, delivery: DeliveryData, token: OrderTokenData!): Message
     finishOrder(order: OrderData, token: OrderTokenData): Message
+    editOrder(orderNumber: String,  person: PersonData, address: AddressData, order: EditOrderData): Order
   }
 `;
