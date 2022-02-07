@@ -28,7 +28,7 @@ export const orderResolvers = {
       if (params && Object.keys(params).length !== 0) {
         const _params = ordersFilter(params);
         const count = await Order.find(_params).countDocuments();
-        const pages = Math.ceil(count / 10);
+        const pages = Math.ceil(count / limit);
 
         const orders = count
           ? await Order.find(_params)

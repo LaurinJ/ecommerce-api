@@ -22,14 +22,34 @@ export const typeDefs = `
     token: String
   }
 
+  input ContactData {
+    email: String
+    content: String
+  }
+
+  type ContactMessage {
+    _id: ID
+    email: String
+    content: String
+    read: Boolean
+    createdAt: String
+  }
+
+  type ContactMessages {
+    messages: [ContactMessage]!
+    pages: Int!
+  }
+
   type Query {
     getMessages(id:String): [ChatMessage]!
     getAdminToken: AdminChatToken
+    getContactMessages(limit: Int, skip: Int): ContactMessages!
   }
 
   type Mutation {
     sendMessage(message: MessageData!): ChatMessage!
     setAdminToken(token: String!): AdminChatToken!
     deleteAdminToken(token: String!): AdminChatToken
+    sendContactMessage(message: ContactData): ContactMessage
   }
 `;

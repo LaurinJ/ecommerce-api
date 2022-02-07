@@ -1,15 +1,10 @@
-import {
-  ApolloError,
-  UserInputError,
-  ValidationError,
-} from "apollo-server-express";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+import { UserInputError } from "apollo-server-express";
 import { AdminChatToken } from "../../models/adminChatToken.js";
 import { Message } from "../../models/message.js";
+import { ContactMessage } from "../../models/contactMessage.js";
 import { withFilter } from "graphql-subscriptions";
 import { PubSub } from "graphql-subscriptions";
-
+import { contactMessageValidator } from "../../validators/contactMessage.js";
 export const pubsub = new PubSub();
 
 export const chatResolvers = {
@@ -26,6 +21,19 @@ export const chatResolvers = {
     async getAdminToken() {
       const adminToken = AdminChatToken.findOne({});
       return adminToken;
+    },
+    async getContactMessages(_, { limit = 12, skip = 1 }) {
+      const page = (skip - 1) * limit;
+      const count = await ContactMessage.find({}).countDocuments();
+      const pages = Math.ceil(count / limit);
+
+      const messages = count
+        ? await ContactMessage.find({})
+            .sort("-createdAt")
+            .skip(page)
+            .limit(limit)
+        : [];
+      return { messages: messages, pages: pages };
     },
   },
   Mutation: {
@@ -52,6 +60,18 @@ export const chatResolvers = {
         return adminToken;
       }
       throw new UserInputError("Neplatný token!");
+    },
+    async sendContactMessage(_, { message }) {
+      //check contact data
+      const messageErrors = contactMessageValidator(message);
+      if (Object.keys(messageErrors).length !== 0) {
+        throw new UserInputError("Invalid argument value", {
+          errors: messageErrors,
+        });
+      }
+      const _message = new ContactMessage(message);
+      const data = await _message.save();
+      return data._doc;
     },
   },
   Subscription: {

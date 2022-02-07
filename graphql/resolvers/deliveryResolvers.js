@@ -23,8 +23,7 @@ export const deliveryResolvers = {
   },
   Mutation: {
     async createDeliveryMethod(_, { delivery, image }) {
-      //check deliver data:
-      console.log("ok");
+      //check deliver data
       const deliveryErrors = deliverValidator(delivery);
       if (Object.keys(deliveryErrors).length !== 0) {
         throw new UserInputError("Invalid argument value", {
