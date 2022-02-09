@@ -63,6 +63,7 @@ export const typeDefs = `
     testmultisave: Product!
     getProduct(slug: String!): Product!
     getProducts(limit: Int, skip: Int, query: String): [Product]
+    getProductsByCategory(slug: String, limit: Int, skip: Int): FilterProducts!
     getCountProducts: CountProducts!
     getFilterProducts(params: FilterData, limit: Int, skip: Int): FilterProducts!
   }

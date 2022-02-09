@@ -97,6 +97,29 @@ export const productResolvers = {
       return { count: count };
     },
 
+    async getProductsByCategory(_, { limit = 12, skip = 1, slug }) {
+      const page = (skip - 1) * limit;
+      if (slug) {
+        // const _params = productsFilter(params);
+        const regex = escapeStringRegexp(slug);
+        const category = await Category.findOne({ slug: { $regex: regex } });
+        if (category) {
+          const count = await Product.find({
+            categories: category._id,
+          }).countDocuments();
+          const pages = Math.ceil(count / 10);
+
+          const products = count
+            ? await Product.find({ categories: category._id })
+                .skip(page)
+                .limit(limit)
+            : [];
+          return { products: products, pages: pages };
+        }
+      }
+      return { products: [], pages: 0 };
+    },
+
     async getFilterProducts(_, { limit = 12, skip = 1, params }) {
       const page = (skip - 1) * limit;
       if (params && Object.keys(params).length !== 0) {
@@ -108,10 +131,7 @@ export const productResolvers = {
           ? await Product.find(_params).skip(page).limit(limit)
           : [];
         return { products: products, pages: pages };
-        // return products;
       }
-
-      // const products = await Product.find({}).skip(page).limit(limit);
       return { products: [], pages: 0 };
     },
   },
