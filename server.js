@@ -28,8 +28,7 @@ async function startApolloServer() {
       schema,
       execute,
       subscribe,
-      onConnect: (connectionParams, webSocket) => {
-        // console.log(connectionParams);
+      onConnect: (connectionParams) => {
         return connectionParams;
       },
     },
@@ -39,9 +38,6 @@ async function startApolloServer() {
   const server = new ApolloServer({
     schema,
     cors: cors(corsOptions),
-    // context: (connectionParams) => {
-    //   console.log("con", connectionParams);
-    // },
     context: contextMiddleware,
 
     plugins: [
