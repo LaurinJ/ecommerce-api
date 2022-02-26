@@ -3,7 +3,7 @@ const { ObjectId } = mongoose.Schema;
 
 const reviewSchema = new mongoose.Schema(
   {
-    user: { type: ObjectId, ref: "Product", required: true },
+    user: { type: ObjectId, ref: "User", required: true },
     product: { type: ObjectId, ref: "Product", required: true },
     content: {
       type: String,

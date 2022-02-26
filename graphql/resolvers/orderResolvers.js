@@ -35,6 +35,7 @@ export const orderResolvers = {
               .populate("payment_method")
               .populate("deliver_method")
               .populate("person")
+              .sort("-createdAt")
               .skip(page)
               .limit(limit)
           : [];

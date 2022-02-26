@@ -8,7 +8,7 @@ export const contextMiddleware = (context) => {
 
   if (token) {
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decodedToken) => {
-      context.user = decodedToken;
+      context.user = decodedToken.user;
     });
   }
 
