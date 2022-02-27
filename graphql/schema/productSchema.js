@@ -48,6 +48,7 @@ export const typeDefs = `
     category: ID
     min_price: Int
     max_price: Int
+    sort: String
   }
 
   type FilterProducts{
@@ -63,7 +64,7 @@ export const typeDefs = `
     testmultisave: Product!
     getProduct(slug: String!): Product!
     getProducts(limit: Int, skip: Int, query: String): [Product]
-    getProductsByCategory(slug: String, limit: Int, skip: Int, params: FilterData): FilterProducts!
+    getProductsByCategory(limit: Int, skip: Int, params: FilterData): FilterProducts!
     getCountProducts: CountProducts!
     getFilterProducts(params: FilterData, limit: Int, skip: Int): FilterProducts!
   }

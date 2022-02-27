@@ -1,6 +1,5 @@
 export const typeDefs = `
   type Message {
-    status: Int
     message: String
   }
 
@@ -43,5 +42,6 @@ export const typeDefs = `
     login(user: userLoginData): User_Token
     logout(token: RefreshToken!): Message
     generateRefreshToken(token: RefreshToken!): Token!
+    subscribeToNews(email: String!): Message
   }
 `;

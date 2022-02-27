@@ -97,20 +97,26 @@ export const productResolvers = {
       return { count: count };
     },
 
-    async getProductsByCategory(_, { limit = 12, skip = 1, slug, params }) {
+    async getProductsByCategory(_, { limit = 12, skip = 1, params }) {
       const page = (skip - 1) * limit;
+      // check params
       if (params && Object.keys(params).length !== 0) {
+        // create a search query
         let _params = productsFilter(params);
-        // const regex = escapeStringRegexp(slug);
-        // const category = await Category.findOne({ slug: { $regex: regex } });
         const category = await Category.findOne({ slug: _params.categories });
+        // check category
         if (category) {
           _params.categories = category._id;
+          // get the number of products
           const count = await Product.find(_params).countDocuments();
           const pages = Math.ceil(count / 10);
 
+          // get products
           const products = count
-            ? await Product.find(_params).skip(page).limit(limit)
+            ? await Product.find(_params)
+                .sort(params.sort)
+                .skip(page)
+                .limit(limit)
             : [];
           return { products: products, pages: pages };
         }

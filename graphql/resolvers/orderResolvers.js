@@ -97,7 +97,7 @@ export const orderResolvers = {
       _order.payment_method = payment._id;
       _order.deliver_method = delivery._id;
       let _up = await _order.save();
-      return { status: 204 };
+      return { message: "Ok" };
     },
     async finishOrder(_, { order, token }) {
       let _order;
@@ -113,7 +113,7 @@ export const orderResolvers = {
           return { status: 201, message: "Objednávka úspěšně dokončena" };
         }
       }
-      return { status: 400, message: "Nepodařilo se najít objednávku" };
+      return { message: "Nepodařilo se najít objednávku" };
     },
     async editOrder(
       _,

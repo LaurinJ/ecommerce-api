@@ -1,12 +1,10 @@
-import {
-  ApolloError,
-  UserInputError,
-  ValidationError,
-} from "apollo-server-express";
+import { ApolloError, UserInputError } from "apollo-server-express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { User } from "../../models/user.js";
 import { Token } from "../../models/token.js";
+import { Email } from "../../models/email.js";
+import { emailValidator } from "../../validators/emailValidator.js";
 
 export const userResolvers = {
   Query: {},
@@ -25,8 +23,6 @@ export const userResolvers = {
             //generate a pair of tokens if valid and send
             let accessToken = await _user.createAccessToken();
             let refreshToken = await _user.createRefreshToken();
-            let name = _user.name;
-            let email = _user.email;
             return { accessToken, refreshToken, user: _user };
           } else {
             //send error if password is invalid
@@ -109,6 +105,21 @@ export const userResolvers = {
         console.error(error);
         throw new ApolloError(error.message, 401);
       }
+    },
+    async subscribeToNews(_, { email }) {
+      // check email
+      const error = emailValidator(email);
+      if (!error) {
+        // check if the email does not exist
+        const _email = await Email.findOne({ email: email });
+        if (!_email) {
+          // save email
+          const data = new Email({ email: email });
+          await data.save();
+        }
+        return { message: "Okiii" };
+      }
+      throw new UserInputError(error);
     },
   },
 };
