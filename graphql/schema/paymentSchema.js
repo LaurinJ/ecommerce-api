@@ -20,5 +20,6 @@ export const typeDefs = `
   type Mutation {
     createPayment(payment: PaymentData!, image: Upload): Payment!
     editPayment(payment: PaymentData!, image: Upload): Payment!
+    createStripePayment(orderNumber: String): String
   }
 `;
