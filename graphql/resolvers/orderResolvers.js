@@ -1,4 +1,4 @@
-import { UserInputError } from "apollo-server-express";
+import { UserInputError, ApolloError } from "apollo-server-express";
 import { Address } from "../../models/address.js";
 import { Person } from "../../models/person.js";
 import { PersonDetail } from "../../models/personDetail.js";
@@ -110,10 +110,11 @@ export const orderResolvers = {
           _order.items = order.items;
           _order.state = "created";
           _order = await _order.save();
-          return { status: 201, message: "Objednávka úspěšně dokončena" };
+          // return { message: "Objednávka úspěšně dokončena" };
+          return _order;
         }
       }
-      return { message: "Nepodařilo se najít objednávku" };
+      throw new ApolloError("Nepodařilo se najít objednávku");
     },
     async editOrder(
       _,

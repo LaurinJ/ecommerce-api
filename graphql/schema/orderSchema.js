@@ -79,14 +79,13 @@ export const typeDefs = `
     payment_method: Payment
     deliver_method: Delivery
     state: String
-    orderNumber: Int
+    orderNumber: String
     is_paid: Boolean
     paid_at: String
     is_deliver: Boolean
     delivered_at: String
     createdAt: String
   }
-  
 
   type Orders {
     orders: [Order]
@@ -105,7 +104,7 @@ export const typeDefs = `
   type Mutation {
     createOrUpdateOrder(person: PersonData, address: AddressData, token: OrderTokenData): OrderToken!
     paymentDelivery(payment: PaymentData, delivery: DeliveryData, token: OrderTokenData!): Message
-    finishOrder(order: OrderData, token: OrderTokenData): Message
+    finishOrder(order: OrderData, token: OrderTokenData): Order!
     editOrder(orderNumber: String,  person: PersonData, address: AddressData, order: EditOrderData): Order
   }
 `;
