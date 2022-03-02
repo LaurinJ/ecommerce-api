@@ -1,10 +1,9 @@
-import { UserInputError } from "apollo-server-express";
+import { ApolloError, UserInputError } from "apollo-server-express";
 import { Payment } from "../../models/payment.js";
 import { Order } from "../../models/order.js";
 import { uploadProcess } from "../../helpers/image.js";
 
 import Stripe from "stripe";
-// const stripe = new Stripe(process.env.STRAPI_PRIVATE_KEY);
 
 export const paymentResolvers = {
   Query: {
@@ -69,38 +68,35 @@ export const paymentResolvers = {
         throw new UserInputError("Invalid argument value");
       }
       const _order = await Order.findOne({ orderNumber: orderNumber });
-      // console.log(_order);
-      try {
-        const stripe = new Stripe(
-          "sk_test_51KYdQtJcQ5HN8MiYerULIm8ppK9BFBBj65TmVzi8b8fcBuyaNWQMNaTczICAEls7p0JeU89CUqxshCAJFy43r0Ax00FI3kU9lu"
-        );
-        const session = await stripe.checkout.sessions.create({
-          payment_method_types: ["card"],
-          mode: "payment",
-          line_items: _order.items.map((item) => {
-            return {
-              price_data: {
-                // currency: "czk",
-                currency: "usd",
-                product_data: {
-                  name: item.title,
+      if (_order) {
+        try {
+          const stripe = new Stripe(process.env.STRIPE_PRIVATE_KEY);
+          const session = await stripe.checkout.sessions.create({
+            payment_method_types: ["card"],
+            mode: "payment",
+            line_items: _order.items.map((item) => {
+              return {
+                price_data: {
+                  currency: "czk",
+                  product_data: {
+                    name: item.title,
+                  },
+                  unit_amount: item.price * 100,
                 },
-                unit_amount: item.price,
-              },
-              quantity: item.count,
-            };
-          }),
-          success_url: `http://localhost:3000/checkout/pay-for-it?order=1646169703862`,
-          cancel_url: `http://localhost:3000/checkout/pay-for-it?order=1646169703862`,
-        });
-        return session.url;
-      } catch (e) {
-        // res.status(500).json({ error: e.message });
-        console.log(e);
+                quantity: item.count,
+              };
+            }),
+            success_url: `http://localhost:3000/checkout/pay-for-it?order=1646169703862`,
+            cancel_url: `http://localhost:3000/checkout/pay-for-it?order=1646169703862`,
+          });
+          return { url: session.url };
+        } catch (e) {
+          console.log(e);
+          throw new ApolloError("Něco se nezdařilo");
+        }
       }
 
-      // console.log(process.env.STRIPE_PRIVATE_KEY);
-      return "_payment._doc";
+      throw new ApolloError("Neplatná objednávka");
     },
   },
 };

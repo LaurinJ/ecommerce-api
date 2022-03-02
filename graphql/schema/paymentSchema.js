@@ -12,6 +12,10 @@ export const typeDefs = `
       hidden: Boolean
   }
 
+  type Url {
+    url: String
+  }
+
   type Query {
     getPaymentMethod(id: String): Payment
     getPaymentMethods(limit: Int, skip: Int): [Payment]!
@@ -20,6 +24,6 @@ export const typeDefs = `
   type Mutation {
     createPayment(payment: PaymentData!, image: Upload): Payment!
     editPayment(payment: PaymentData!, image: Upload): Payment!
-    createStripePayment(orderNumber: String): String
+    createStripePayment(orderNumber: String): Url!
   }
 `;
