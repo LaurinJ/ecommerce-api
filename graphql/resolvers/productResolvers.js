@@ -109,7 +109,7 @@ export const productResolvers = {
           _params.categories = category._id;
           // get the number of products
           const count = await Product.find(_params).countDocuments();
-          const pages = Math.ceil(count / 10);
+          const pages = Math.ceil(count / limit);
 
           // get products
           const products = count

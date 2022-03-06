@@ -67,16 +67,16 @@ export const paymentResolvers = {
       if (!orderNumber) {
         throw new UserInputError("Invalid argument value");
       }
+      // get order
       const _order = await Order.findOne({ orderNumber: orderNumber });
+      // if there is an order - create a stripe payment
       if (_order) {
-        // console.log(_order.token);
         try {
           const stripe = new Stripe(process.env.STRIPE_PRIVATE_KEY);
           const session = await stripe.checkout.sessions.create({
             payment_method_types: ["card"],
             mode: "payment",
             client_reference_id: _order.token,
-            // client_reference_id: "5566212sadf",
             line_items: _order.items.map((item) => {
               return {
                 price_data: {
@@ -89,7 +89,7 @@ export const paymentResolvers = {
                 quantity: item.count,
               };
             }),
-            success_url: `http://localhost:3000/checkout/pay-for-it?order=1646169703862`,
+            success_url: `http://localhost:3000/checkout/success`,
             cancel_url: `http://localhost:3000/checkout/pay-for-it?order=1646169703862`,
           });
           return { url: session.url };
