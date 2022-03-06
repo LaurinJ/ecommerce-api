@@ -69,11 +69,14 @@ export const paymentResolvers = {
       }
       const _order = await Order.findOne({ orderNumber: orderNumber });
       if (_order) {
+        // console.log(_order.token);
         try {
           const stripe = new Stripe(process.env.STRIPE_PRIVATE_KEY);
           const session = await stripe.checkout.sessions.create({
             payment_method_types: ["card"],
             mode: "payment",
+            client_reference_id: _order.token,
+            // client_reference_id: "5566212sadf",
             line_items: _order.items.map((item) => {
               return {
                 price_data: {
