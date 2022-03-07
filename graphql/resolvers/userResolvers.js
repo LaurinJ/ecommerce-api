@@ -68,7 +68,7 @@ export const userResolvers = {
         //delete the refresh token saved in database:
         const { refreshToken } = token;
         await Token.findOneAndDelete({ token: refreshToken });
-        return { status: 204, message: "Byl si úspěšně odhlášen" };
+        return { message: "Byl si úspěšně odhlášen" };
       } catch (error) {
         console.error(error);
         throw new ApolloError(error.message, 401);
@@ -126,11 +126,11 @@ export const userResolvers = {
         if (user) {
           let accessToken = await user.createAccessToken();
           let refreshToken = await user.createRefreshToken();
-          const { _id, email: _email, role, name: _name } = user;
+          delete user.password;
           return {
             accessToken,
             refreshToken,
-            user: { _id, _email, role, _name },
+            user: user,
           };
         } else {
           const newUser = await new User({
@@ -140,11 +140,11 @@ export const userResolvers = {
           }).save();
           let accessToken = await newUser.createAccessToken();
           let refreshToken = await newUser.createRefreshToken();
-          const { _id, email: _email, role, name: _name } = newUser;
+          delete newUser.password;
           return {
             accessToken,
             refreshToken,
-            user: { _id, _email, role, _name },
+            user: newUser,
           };
         }
       }
