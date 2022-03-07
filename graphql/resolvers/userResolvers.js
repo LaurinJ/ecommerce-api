@@ -1,10 +1,13 @@
 import { ApolloError, UserInputError } from "apollo-server-express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { OAuth2Client } from "google-auth-library";
 import { User } from "../../models/user.js";
 import { Token } from "../../models/token.js";
 import { Email } from "../../models/email.js";
 import { emailValidator } from "../../validators/emailValidator.js";
+
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 export const userResolvers = {
   Query: {},
@@ -106,6 +109,48 @@ export const userResolvers = {
         throw new ApolloError(error.message, 401);
       }
     },
+
+    async googleLogin(_, { token }) {
+      let user;
+      const idToken = token;
+      // check google idToken
+      const response = await client.verifyIdToken({
+        idToken,
+        audience: process.env.GOOGLE_CLIENT_ID,
+      });
+      const { email_verified, email, name, jti } = response.payload;
+      // check if the email is verified
+      if (email_verified) {
+        user = await User.findOne({ email: email }).exec();
+        // if the user exists, create a token or register the user
+        if (user) {
+          let accessToken = await user.createAccessToken();
+          let refreshToken = await user.createRefreshToken();
+          const { _id, email: _email, role, name: _name } = user;
+          return {
+            accessToken,
+            refreshToken,
+            user: { _id, _email, role, _name },
+          };
+        } else {
+          const newUser = await new User({
+            name: name,
+            email: email,
+            password: jti,
+          }).save();
+          let accessToken = await newUser.createAccessToken();
+          let refreshToken = await newUser.createRefreshToken();
+          const { _id, email: _email, role, name: _name } = newUser;
+          return {
+            accessToken,
+            refreshToken,
+            user: { _id, _email, role, _name },
+          };
+        }
+      }
+      throw new UserInputError("Google login failed. Try again.");
+    },
+
     async subscribeToNews(_, { email }) {
       // check email
       const error = emailValidator(email);

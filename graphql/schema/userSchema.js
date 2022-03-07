@@ -39,9 +39,10 @@ export const typeDefs = `
 
   type Mutation {
     createUser(user: userRegisterData!): User_Token
-    login(user: userLoginData): User_Token
+    login(user: userLoginData): User_Token!
     logout(token: RefreshToken!): Message
     generateRefreshToken(token: RefreshToken!): Token!
+    googleLogin(token: String): User_Token!
     subscribeToNews(email: String!): Message
   }
 `;
