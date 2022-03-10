@@ -182,7 +182,7 @@ export const productResolvers = {
       const cat = await Category.find({
         _id: { $in: product.categories },
       }).exec();
-      const newProduct = Product.findByIdAndUpdate(
+      const newProduct = await Product.findByIdAndUpdate(
         { _id: product._id },
         {
           ...product,

@@ -69,6 +69,19 @@ userSchema.methods = {
       return;
     }
   },
+  changePassword: async function (password) {
+    try {
+      console.log(this.password);
+      let salt = await bcrypt.genSalt(12); // generate hash salt of 12 rounds
+      let hashedPassword = await bcrypt.hash(password, salt); // hash the new user's password
+      this.password = hashedPassword;
+      console.log(this.password);
+      // await this.save();
+    } catch (error) {
+      console.error(error);
+      return;
+    }
+  },
 };
 
 userSchema.pre("save", async function (next) {

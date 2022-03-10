@@ -6,6 +6,8 @@ import { User } from "../../models/user.js";
 import { Token } from "../../models/token.js";
 import { Email } from "../../models/email.js";
 import { emailValidator } from "../../validators/emailValidator.js";
+import { passwordValidator } from "../../validators/password.js";
+import { isAuthenticate } from "../../helpers/user.js";
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -149,6 +151,39 @@ export const userResolvers = {
         }
       }
       throw new UserInputError("Google login failed. Try again.");
+    },
+
+    async changePassword(_, { passwords }, { user }) {
+      isAuthenticate(user);
+      // check passwords
+      const passwordsErrors = passwordValidator(passwords);
+      if (Object.keys(passwordsErrors).length !== 0) {
+        throw new UserInputError("Invalid argument value", {
+          errors: passwordsErrors,
+        });
+      }
+      //check if user exists in database:
+      let _user = await User.findOne({ _id: user._id });
+      //send error if no user found:
+      if (!_user) {
+        throw new UserInputError("Uživatel nebyl nalezen!");
+      } else {
+        //check if password is valid:
+        let valid = await bcrypt.compare(
+          passwords.old_password,
+          _user.password
+        );
+        if (valid) {
+          // change password
+          console.log(passwords.password);
+          const s = await _user.changePassword(passwords.password);
+          _user.save();
+          return { message: "Heslo bylo úspěšně změněno" };
+        } else {
+          //send error if password is invalid
+          throw new UserInputError("Neplatné staré heslo!");
+        }
+      }
     },
 
     async subscribeToNews(_, { email }) {

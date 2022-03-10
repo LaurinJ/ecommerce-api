@@ -37,12 +37,19 @@ export const typeDefs = `
     confirm_password: String!
   }
 
+  input ChangePasswordData {
+    old_password: String
+    password: String
+    confirm_password: String
+  }
+
   type Mutation {
     createUser(user: userRegisterData!): User_Token
     login(user: userLoginData): User_Token!
     logout(token: RefreshToken!): Message
     generateRefreshToken(token: RefreshToken!): Token!
     googleLogin(token: String): User_Token!
+    changePassword(passwords: ChangePasswordData): Message
     subscribeToNews(email: String!): Message
   }
 `;
