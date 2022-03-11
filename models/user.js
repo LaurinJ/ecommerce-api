@@ -69,14 +69,21 @@ userSchema.methods = {
       return;
     }
   },
+  generatePassword: async function () {
+    try {
+      let salt = await bcrypt.genSalt(12); // generate hash salt of 12 rounds
+      let hashedPassword = await bcrypt.hash(this.password, salt); // hash the current user's password
+      this.password = hashedPassword;
+    } catch (error) {
+      console.error(error);
+    }
+  },
   changePassword: async function (password) {
     try {
-      console.log(this.password);
       let salt = await bcrypt.genSalt(12); // generate hash salt of 12 rounds
       let hashedPassword = await bcrypt.hash(password, salt); // hash the new user's password
       this.password = hashedPassword;
-      console.log(this.password);
-      // await this.save();
+      await this.save();
     } catch (error) {
       console.error(error);
       return;
@@ -84,15 +91,15 @@ userSchema.methods = {
   },
 };
 
-userSchema.pre("save", async function (next) {
-  try {
-    let salt = await bcrypt.genSalt(12); // generate hash salt of 12 rounds
-    let hashedPassword = await bcrypt.hash(this.password, salt); // hash the current user's password
-    this.password = hashedPassword;
-  } catch (error) {
-    console.error(error);
-  }
-  return next();
-});
+// userSchema.pre("save", async function (next) {
+//   try {
+//     let salt = await bcrypt.genSalt(12); // generate hash salt of 12 rounds
+//     let hashedPassword = await bcrypt.hash(this.password, salt); // hash the current user's password
+//     this.password = hashedPassword;
+//   } catch (error) {
+//     console.error(error);
+//   }
+//   return next();
+// });
 
 export const User = mongoose.model("User", userSchema);

@@ -59,7 +59,9 @@ export const userResolvers = {
         });
       }
       //create new user and generate a pair of tokens and send
-      _user = await new User(user).save();
+      _user = new User(user);
+      await _user.generatePassword();
+      await _user.save();
       let accessToken = await _user.createAccessToken();
       let refreshToken = await _user.createRefreshToken();
       return { accessToken, refreshToken, user: _user };
@@ -175,9 +177,7 @@ export const userResolvers = {
         );
         if (valid) {
           // change password
-          console.log(passwords.password);
-          const s = await _user.changePassword(passwords.password);
-          _user.save();
+          await _user.changePassword(passwords.password);
           return { message: "Heslo bylo úspěšně změněno" };
         } else {
           //send error if password is invalid
