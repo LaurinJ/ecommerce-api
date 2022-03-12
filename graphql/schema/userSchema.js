@@ -43,6 +43,20 @@ export const typeDefs = `
     confirm_password: String
   }
 
+  input ResetPasswordData {
+    password: String
+    confirm_password: String
+  }
+
+  type CheckToken {
+    status: Boolean!
+    email: String!
+  }
+
+  type Query {
+    checkResetPasswordToken(token: String!): CheckToken!
+  }
+
   type Mutation {
     createUser(user: userRegisterData!): User_Token
     login(user: userLoginData): User_Token!
@@ -50,6 +64,8 @@ export const typeDefs = `
     generateRefreshToken(token: RefreshToken!): Token!
     googleLogin(token: String): User_Token!
     changePassword(passwords: ChangePasswordData): Message
+    resetPassword(passwords: ResetPasswordData, email: String): Message
+    sendChangeEmail(email: String!): Message
     subscribeToNews(email: String!): Message
   }
 `;

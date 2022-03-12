@@ -5,14 +5,29 @@ import { OAuth2Client } from "google-auth-library";
 import { User } from "../../models/user.js";
 import { Token } from "../../models/token.js";
 import { Email } from "../../models/email.js";
-import { emailValidator } from "../../validators/emailValidator.js";
-import { passwordValidator } from "../../validators/password.js";
+import {
+  passwordValidator,
+  changePasswordValidator,
+} from "../../validators/password.js";
+import { emailValidator } from "../../validators/email.js";
 import { isAuthenticate } from "../../helpers/user.js";
+import { sendEmail } from "../../helpers/email.js";
+import { checkToken } from "../../helpers/token.js";
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 export const userResolvers = {
-  Query: {},
+  Query: {
+    async checkResetPasswordToken(_, { token }) {
+      try {
+        // check token
+        const data = checkToken(token);
+        return { status: true, email: data.email };
+      } catch {
+        return { status: false, email: "" };
+      }
+    },
+  },
   Mutation: {
     async login(_, { user }) {
       try {
@@ -158,7 +173,7 @@ export const userResolvers = {
     async changePassword(_, { passwords }, { user }) {
       isAuthenticate(user);
       // check passwords
-      const passwordsErrors = passwordValidator(passwords);
+      const passwordsErrors = changePasswordValidator(passwords);
       if (Object.keys(passwordsErrors).length !== 0) {
         throw new UserInputError("Invalid argument value", {
           errors: passwordsErrors,
@@ -183,6 +198,36 @@ export const userResolvers = {
           //send error if password is invalid
           throw new UserInputError("Neplatné staré heslo!");
         }
+      }
+    },
+
+    async sendChangeEmail(_, { email }) {
+      // check email
+      const emailError = emailValidator(email);
+      if (emailError) {
+        throw new UserInputError(emailError);
+      }
+      sendEmail(email);
+      return { message: "Email byl odeslán!" };
+    },
+
+    async resetPassword(_, { passwords, email }) {
+      // check passwords
+      const passwordsErrors = passwordValidator(passwords);
+      if (Object.keys(passwordsErrors).length !== 0) {
+        throw new UserInputError("Invalid argument value", {
+          errors: passwordsErrors,
+        });
+      }
+      //check if user exists in database:
+      let _user = await User.findOne({ email: email });
+      //send error if no user found:
+      if (!_user) {
+        throw new UserInputError("Uživatel nebyl nalezen!");
+      } else {
+        // change password
+        await _user.changePassword(passwords.password);
+        return { message: "Heslo bylo úspěšně změněno" };
       }
     },
 

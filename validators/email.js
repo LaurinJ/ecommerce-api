@@ -1,4 +1,4 @@
-export const emailValidator = (email) => {
+export function emailValidator(email) {
   let error;
   const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
   if (!email) {
@@ -7,4 +7,4 @@ export const emailValidator = (email) => {
     error = "Email je ve špatném formátu";
   }
   return error;
-};
+}
