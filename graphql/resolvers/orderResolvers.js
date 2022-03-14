@@ -7,6 +7,12 @@ import { personValidator } from "../../validators/person.js";
 import { addressValidator } from "../../validators/address.js";
 import { orderValidator } from "../../validators/order.js";
 import { ordersFilter } from "../../helpers/ordersFilter.js";
+import {
+  canceledOrderEmail,
+  confirmOrderEmail,
+  paidOrderEmail,
+  deliveredOrderEmail,
+} from "../../helpers/email.js";
 
 export const orderResolvers = {
   Query: {
@@ -110,7 +116,13 @@ export const orderResolvers = {
           _order.items = order.items;
           _order.state = "created";
           _order = await _order.save();
-          // return { message: "Objednávka úspěšně dokončena" };
+
+          let _person = await Person.findById(
+            _order.person,
+            "person_detail"
+          ).populate("person_detail");
+          confirmOrderEmail(_person.person_detail.email, _order.orderNumber);
+
           return _order;
         }
       }

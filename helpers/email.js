@@ -19,11 +19,46 @@ const transporter = nodemailer.createTransport(
 
 export const passwordResetEmail = async (email) => {
   const token = generateToken(email);
-  let info = await transporter.sendMail({
+  await transporter.sendMail({
     to: email, // list of receivers
     subject: "Změna hesla", // Subject line
     text: "Pro změnu hesla klikni na nasledujcí tlačítko", // plain text body
     html: `<p>Pro změnu hesla klikni na nasledujcí tlačítko</p><a style='color: white; text-decoration:none; font-weight: 700; padding: 5px; background-color: blue;' href='http://localhost:3000/account/resetpassword?token=${token}'>Změnit heslo</a>`, // html body
   });
-  console.log(info);
+};
+
+export const confirmOrderEmail = async (email, orderNumber) => {
+  await transporter.sendMail({
+    to: email, // list of receivers
+    subject: "Objednávka byla přijata.", // Subject line
+    text: `Vaše objednávka č. ${orderNumber} byla přijata.`, // plain text body
+    html: `<p>Vaše objednávka č. ${orderNumber} byla přijata.</p>`, // html body
+  });
+};
+
+export const paidOrderEmail = async (email, orderNumber) => {
+  await transporter.sendMail({
+    to: email, // list of receivers
+    subject: "Objednávka byla zaplacená.", // Subject line
+    text: `Vaše objednávka č. ${orderNumber} byla zaplacená.`, // plain text body
+    html: `<p>Vaše objednávka č. ${orderNumber} byla zaplacená.</p>`, // html body
+  });
+};
+
+export const deliveredOrderEmail = async (email, orderNumber) => {
+  await transporter.sendMail({
+    to: email, // list of receivers
+    subject: "Objednávka byla expedována.", // Subject line
+    text: `Vaše objednávka č. ${orderNumber} byla expedována.`, // plain text body
+    html: `<p>Vaše objednávka č. ${orderNumber} byla expedována.</p>`, // html body
+  });
+};
+
+export const canceledOrderEmail = async (email, orderNumber) => {
+  await transporter.sendMail({
+    to: email, // list of receivers
+    subject: "Objednávka byla zrušená.", // Subject line
+    text: `Vaše objednávka č. ${orderNumber} byla zrušená.`, // plain text body
+    html: `<p>Vaše objednávka č. ${orderNumber} byla zrušená.</p>`, // html body
+  });
 };

@@ -1,6 +1,8 @@
 import express from "express";
 import Stripe from "stripe";
 import { Order } from "../models/order.js";
+import { Person } from "../models/person.js";
+import { paidOrderEmail } from "../helpers/email.js";
 
 const router = express.Router();
 const stripe = Stripe(process.env.STRIPE_PRIVATE_KEY);
@@ -32,6 +34,12 @@ router.post(
             _order.is_paid = true;
             _order.paid_at = new Date();
             _order.save();
+
+            let _person = await Person.findById(
+              _order.person,
+              "person_detail"
+            ).populate("person_detail");
+            paidOrderEmail(_person.person_detail.email, _order.orderNumber);
           }
         }
       } catch (err) {
