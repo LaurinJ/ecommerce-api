@@ -17,10 +17,9 @@ const transporter = nodemailer.createTransport(
   }
 );
 
-export const sendEmail = async (email) => {
+export const passwordResetEmail = async (email) => {
   const token = generateToken(email);
   let info = await transporter.sendMail({
-    // from: '"Fred Foo 👻" <foo@example.com>', // sender address
     to: email, // list of receivers
     subject: "Změna hesla", // Subject line
     text: "Pro změnu hesla klikni na nasledujcí tlačítko", // plain text body

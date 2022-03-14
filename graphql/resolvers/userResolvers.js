@@ -11,7 +11,7 @@ import {
 } from "../../validators/password.js";
 import { emailValidator } from "../../validators/email.js";
 import { isAuthenticate } from "../../helpers/user.js";
-import { sendEmail } from "../../helpers/email.js";
+import { passwordResetEmail } from "../../helpers/email.js";
 import { checkToken } from "../../helpers/token.js";
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -207,7 +207,7 @@ export const userResolvers = {
       if (emailError) {
         throw new UserInputError(emailError);
       }
-      sendEmail(email);
+      passwordResetEmail(email);
       return { message: "Email byl odeslán!" };
     },
 
