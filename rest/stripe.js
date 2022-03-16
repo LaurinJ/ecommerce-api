@@ -3,6 +3,7 @@ import Stripe from "stripe";
 import { Order } from "../models/order.js";
 import { Person } from "../models/person.js";
 import { paidOrderEmail } from "../helpers/email.js";
+import { createInvoice } from "../helpers/invoice.js";
 
 const router = express.Router();
 const stripe = Stripe(process.env.STRIPE_PRIVATE_KEY);
@@ -28,17 +29,17 @@ router.post(
         if (event.type === "checkout.session.completed") {
           const _order = await Order.findOne({
             token: event.data.object.client_reference_id,
-          });
+          }).populate("deliver_method");
           // if there is an order - order update
           if (_order) {
             _order.is_paid = true;
             _order.paid_at = new Date();
             _order.save();
 
-            let _person = await Person.findById(
-              _order.person,
-              "person_detail"
-            ).populate("person_detail");
+            let _person = await Person.findById(_order.person).populate(
+              "person_detail address"
+            );
+            createInvoice(_order, _person, _order.orderNumber);
             paidOrderEmail(_person.person_detail.email, _order.orderNumber);
           }
         }

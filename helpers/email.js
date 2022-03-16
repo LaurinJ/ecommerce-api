@@ -42,6 +42,13 @@ export const paidOrderEmail = async (email, orderNumber) => {
     subject: "Objednávka byla zaplacená.", // Subject line
     text: `Vaše objednávka č. ${orderNumber} byla zaplacená.`, // plain text body
     html: `<p>Vaše objednávka č. ${orderNumber} byla zaplacená.</p>`, // html body
+    attachments: [
+      {
+        filename: `${orderNumber}.pdf`,
+        path: `invoices/${orderNumber}.pdf`,
+        contentType: "application/pdf",
+      },
+    ],
   });
 };
 

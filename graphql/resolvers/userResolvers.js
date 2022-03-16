@@ -207,6 +207,7 @@ export const userResolvers = {
       if (emailError) {
         throw new UserInputError(emailError);
       }
+      // send email
       passwordResetEmail(email);
       return { message: "Email byl odeslán!" };
     },
@@ -242,7 +243,7 @@ export const userResolvers = {
           const data = new Email({ email: email });
           await data.save();
         }
-        return { message: "Okiii" };
+        return { message: "Ok" };
       }
       throw new UserInputError(error);
     },
