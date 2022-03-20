@@ -44,6 +44,7 @@ export const typeDefs = `
     getMessages(id:String): [ChatMessage]!
     getAdminToken: AdminChatToken
     getContactMessages(limit: Int, skip: Int): ContactMessages!
+    getContactMessage(id: String!): ContactMessage!
   }
 
   type Mutation {

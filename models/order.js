@@ -49,7 +49,7 @@ const orderSchema = new mongoose.Schema(
         "unfinished",
         "created",
         "completed",
-        "accepted",
+        // "accepted",
         "sent",
         "suspended",
         "canceled",

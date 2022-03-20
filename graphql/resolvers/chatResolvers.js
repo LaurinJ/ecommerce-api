@@ -18,10 +18,12 @@ export const chatResolvers = {
       }
       return [];
     },
+
     async getAdminToken() {
       const adminToken = AdminChatToken.findOne({});
       return adminToken;
     },
+
     async getContactMessages(_, { limit = 12, skip = 1 }) {
       const page = (skip - 1) * limit;
       const count = await ContactMessage.find({}).countDocuments();
@@ -35,6 +37,12 @@ export const chatResolvers = {
         : [];
       return { messages: messages, pages: pages };
     },
+
+    async getContactMessage(_, { id }) {
+      if (!id) throw new UserInputError("Tato zpráva neexistuje!");
+      const message = await ContactMessage.findOne({ _id: id });
+      if (message) return message;
+    },
   },
   Mutation: {
     async sendMessage(_, { message }) {
@@ -44,6 +52,7 @@ export const chatResolvers = {
       pubsub.publish("SHARE_MESSAGE", { shareMessage: data });
       return data._doc;
     },
+
     async setAdminToken(_, { token }) {
       if (token) {
         const adminToken = new AdminChatToken({ token: token });
@@ -53,6 +62,7 @@ export const chatResolvers = {
       }
       throw new UserInputError("Neplatný token!");
     },
+
     async deleteAdminToken(_, { token }) {
       if (token) {
         const adminToken = AdminChatToken.findOneAndDelete({ token: token });
@@ -61,6 +71,7 @@ export const chatResolvers = {
       }
       throw new UserInputError("Neplatný token!");
     },
+
     async sendContactMessage(_, { message }) {
       //check contact data
       const messageErrors = contactMessageValidator(message);
