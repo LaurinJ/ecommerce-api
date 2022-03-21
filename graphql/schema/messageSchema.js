@@ -32,6 +32,7 @@ export const typeDefs = `
     email: String
     content: String
     read: Boolean
+    answer: Boolean
     createdAt: String
   }
 
@@ -52,5 +53,7 @@ export const typeDefs = `
     setAdminToken(token: String!): AdminChatToken!
     deleteAdminToken(token: String!): AdminChatToken
     sendContactMessage(message: ContactData): ContactMessage
+    answerContactMessage(message: ContactData): ContactMessage
+    readContactMessage(id: String!): Message!
   }
 `;

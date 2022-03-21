@@ -5,6 +5,7 @@ import { ContactMessage } from "../../models/contactMessage.js";
 import { withFilter } from "graphql-subscriptions";
 import { PubSub } from "graphql-subscriptions";
 import { contactMessageValidator } from "../../validators/contactMessage.js";
+import { contactMessageEmail } from "../../helpers/email.js";
 export const pubsub = new PubSub();
 
 export const chatResolvers = {
@@ -26,11 +27,13 @@ export const chatResolvers = {
 
     async getContactMessages(_, { limit = 12, skip = 1 }) {
       const page = (skip - 1) * limit;
-      const count = await ContactMessage.find({}).countDocuments();
+      const count = await ContactMessage.find({
+        answer: false,
+      }).countDocuments();
       const pages = Math.ceil(count / limit);
 
       const messages = count
-        ? await ContactMessage.find({})
+        ? await ContactMessage.find({ answer: false })
             .sort("-createdAt")
             .skip(page)
             .limit(limit)
@@ -41,7 +44,8 @@ export const chatResolvers = {
     async getContactMessage(_, { id }) {
       if (!id) throw new UserInputError("Tato zpráva neexistuje!");
       const message = await ContactMessage.findOne({ _id: id });
-      if (message) return message;
+      if (!message) throw new UserInputError("Tato zpráva neexistuje!");
+      return message;
     },
   },
   Mutation: {
@@ -84,6 +88,29 @@ export const chatResolvers = {
       const data = await _message.save();
       return data._doc;
     },
+
+    async answerContactMessage(_, { message }) {
+      //check contact data
+      const messageErrors = contactMessageValidator(message);
+      if (Object.keys(messageErrors).length !== 0) {
+        throw new UserInputError("Invalid argument value", {
+          errors: messageErrors,
+        });
+      }
+      const _message = new ContactMessage({ ...message, answer: true });
+      const data = await _message.save();
+      contactMessageEmail(data.email, data.content);
+      return data._doc;
+    },
+
+    async readContactMessage(_, { id }) {
+      let message = await ContactMessage.findById(id);
+      if (message) {
+        message.read = true;
+        message.save();
+      }
+      return { message: "Updated" };
+    },
   },
   Subscription: {
     shareMessage: {
@@ -97,6 +124,7 @@ export const chatResolvers = {
         }
       ),
     },
+
     adminOnline: {
       subscribe: () => pubsub.asyncIterator(["ADMIN_ONLINE"]),
     },

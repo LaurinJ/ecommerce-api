@@ -69,3 +69,12 @@ export const canceledOrderEmail = async (email, orderNumber) => {
     html: `<p>Vaše objednávka č. ${orderNumber} byla zrušená.</p>`, // html body
   });
 };
+
+export const contactMessageEmail = async (email, message) => {
+  await transporter.sendMail({
+    to: email, // list of receivers
+    subject: "Odpověd na váš dotaz.", // Subject line
+    text: message, // plain text body
+    html: message, // html body
+  });
+};
