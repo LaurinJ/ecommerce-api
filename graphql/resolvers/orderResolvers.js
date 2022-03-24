@@ -13,9 +13,32 @@ import {
   paidOrderEmail,
   deliveredOrderEmail,
 } from "../../helpers/email.js";
+import { isAuthenticate } from "../../helpers/user.js";
 
 export const orderResolvers = {
   Query: {
+    async getOrdersCount(_, {}, { user }) {
+      isAuthenticate(user);
+      const _orders = await Order.find({}).countDocuments();
+      return { orders: _orders || 0 };
+    },
+
+    async getOrdersTotal(_, {}, { user }) {
+      // isAuthenticate(user);
+      const _total = await Order.aggregate([
+        {
+          $match: { state: "created" },
+          $group: {
+            _id: null,
+            // is_paid: { $expr: true },
+            total: { $sum: "$total_price" },
+          },
+        },
+      ]);
+      console.log(_total);
+      return { total: _total[0].total || 0 };
+    },
+
     async getOrder(_, { orderNumber }) {
       let _order = await Order.findOne({ orderNumber: orderNumber })
         .populate("payment_method")
@@ -29,6 +52,7 @@ export const orderResolvers = {
         .populate("address");
       return { ..._order._doc, person: _person };
     },
+
     async getOrders(_, { limit = 12, skip = 1, params }) {
       const page = (skip - 1) * limit;
       if (params && Object.keys(params).length !== 0) {

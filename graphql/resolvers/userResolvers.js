@@ -18,6 +18,12 @@ const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 export const userResolvers = {
   Query: {
+    async getUsersCount(_, {}, { user }) {
+      isAuthenticate(user);
+      const _users = await User.find({}).countDocuments();
+      return { users: _users || 0 };
+    },
+
     async checkResetPasswordToken(_, { token }) {
       try {
         // check token

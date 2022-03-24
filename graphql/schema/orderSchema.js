@@ -96,7 +96,17 @@ export const typeDefs = `
     numberOrder: String
   }
   
+  type OrdersCount {
+    orders: Int
+  }
+
+  type OrdersTotal {
+    total: Int
+  }
+
   type Query {
+    getOrdersCount: OrdersCount
+    getOrdersTotal: OrdersTotal
     getOrder(orderNumber: String): Order!
     getOrders(params: FilterOrderData, limit: Int, skip: Int): Orders!
   }

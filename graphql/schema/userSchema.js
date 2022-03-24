@@ -53,7 +53,12 @@ export const typeDefs = `
     email: String!
   }
 
+  type UsersCount {
+    users: Int
+  }
+
   type Query {
+    getUsersCount: UsersCount
     checkResetPasswordToken(token: String!): CheckToken!
   }
 

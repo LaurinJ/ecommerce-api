@@ -32,7 +32,7 @@ export const typeDefs = `
     email: String
     content: String
     read: Boolean
-    answer: Boolean
+    answer: String
     createdAt: String
   }
 
