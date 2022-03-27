@@ -6,6 +6,7 @@ import { withFilter } from "graphql-subscriptions";
 import { PubSub } from "graphql-subscriptions";
 import { contactMessageValidator } from "../../validators/contactMessage.js";
 import { contactMessageEmail } from "../../helpers/email.js";
+import { isAuthenticate } from "../../helpers/user.js";
 export const pubsub = new PubSub();
 
 export const chatResolvers = {
@@ -27,7 +28,9 @@ export const chatResolvers = {
       return adminToken;
     },
 
-    async getContactMessages(_, { limit = 12, skip = 1 }) {
+    async getContactMessages(_, { limit = 12, skip = 1 }, { user }) {
+      isAuthenticate(user);
+
       const page = (skip - 1) * limit;
       const count = await ContactMessage.find({
         answer: false,
@@ -43,7 +46,9 @@ export const chatResolvers = {
       return { messages: messages, pages: pages };
     },
 
-    async getContactMessage(_, { id }) {
+    async getContactMessage(_, { id }, { user }) {
+      isAuthenticate(user);
+
       if (!id) throw new UserInputError("Tato zpráva neexistuje!");
       const message = await ContactMessage.findOne({ _id: id });
       if (!message) throw new UserInputError("Tato zpráva neexistuje!");
@@ -59,7 +64,9 @@ export const chatResolvers = {
       return data._doc;
     },
 
-    async setAdminToken(_, { token }) {
+    async setAdminToken(_, { token }, { user }) {
+      isAuthenticate(user);
+
       if (token) {
         const adminToken = new AdminChatToken({ token: token });
         const data = await adminToken.save();
@@ -69,7 +76,9 @@ export const chatResolvers = {
       throw new UserInputError("Neplatný token!");
     },
 
-    async deleteAdminToken(_, { token }) {
+    async deleteAdminToken(_, { token }, { user }) {
+      isAuthenticate(user);
+
       if (token) {
         const adminToken = AdminChatToken.findOneAndDelete({ token: token });
         pubsub.publish("ADMIN_ONLINE", { adminOnline: null });
@@ -91,7 +100,9 @@ export const chatResolvers = {
       return data._doc;
     },
 
-    async answerContactMessage(_, { message }) {
+    async answerContactMessage(_, { message }, { user }) {
+      isAuthenticate(user);
+
       //check contact data
       const messageErrors = contactMessageValidator(message);
       if (Object.keys(messageErrors).length !== 0) {
@@ -105,7 +116,9 @@ export const chatResolvers = {
       return data._doc;
     },
 
-    async readContactMessage(_, { id }) {
+    async readContactMessage(_, { id }, { user }) {
+      isAuthenticate(user);
+
       let message = await ContactMessage.findById(id);
       if (message) {
         message.read = true;
