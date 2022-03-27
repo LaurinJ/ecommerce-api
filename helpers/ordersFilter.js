@@ -5,5 +5,6 @@ export const ordersFilter = (params) => {
   if (params.numberOrder) {
     filter["orderNumber"] = { $regex: escapeStringRegexp(params.numberOrder) };
   }
+  filter["state"] = { $not: { $regex: "unfinish" } };
   return filter;
 };

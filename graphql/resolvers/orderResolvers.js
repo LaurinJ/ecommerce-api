@@ -27,7 +27,7 @@ export const orderResolvers = {
       // isAuthenticate(user);
       const _total = await Order.aggregate([
         {
-          $match: { state: "created" },
+          // $match: { $not: { $state: "unfinish" } },
           $group: {
             _id: null,
             // is_paid: { $expr: true },
