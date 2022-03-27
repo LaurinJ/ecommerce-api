@@ -12,6 +12,7 @@ import {
 import { chillfeed } from "../../chillfeed.js";
 import { productValidator } from "../../validators/product.js";
 import { productsFilter } from "../../helpers/productsFilter.js";
+import { isAuthenticate } from "../../helpers/user.js";
 
 export const productResolvers = {
   Upload: GraphQLUpload,
@@ -86,13 +87,13 @@ export const productResolvers = {
         "categories",
         "-__v"
       );
-      if (!product) {
-        throw new Error("Produkt nebyl nalezen");
-      }
+      if (!product) throw new Error("Produkt nebyl nalezen");
+
       return product;
     },
 
-    async getCountProducts() {
+    async getCountProducts(_, __, { user }) {
+      isAuthenticate(user);
       const count = await Product.find({}).countDocuments();
       return { count: count };
     },
@@ -129,7 +130,7 @@ export const productResolvers = {
       if (params && Object.keys(params).length !== 0) {
         const _params = productsFilter(params);
         const count = await Product.find(_params).countDocuments();
-        const pages = Math.ceil(count / 10);
+        const pages = Math.ceil(count / limit);
 
         const products = count
           ? await Product.find(_params).skip(page).limit(limit)
@@ -140,7 +141,9 @@ export const productResolvers = {
     },
   },
   Mutation: {
-    async createProduct(_, { product, images }) {
+    async createProduct(_, { product, images }, { user }) {
+      isAuthenticate(user);
+
       //check product data:
       const productErrors = productValidator(product);
       if (Object.keys(productErrors).length !== 0) {
@@ -168,7 +171,9 @@ export const productResolvers = {
       return data._doc;
     },
 
-    async editProduct(_, { product, images }) {
+    async editProduct(_, { product, images }, { user }) {
+      isAuthenticate(user);
+
       //check product data:
       const productErrors = productValidator(product);
       if (Object.keys(productErrors).length !== 0) {
