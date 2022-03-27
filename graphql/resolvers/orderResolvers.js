@@ -10,7 +10,6 @@ import { ordersFilter } from "../../helpers/ordersFilter.js";
 import {
   canceledOrderEmail,
   confirmOrderEmail,
-  paidOrderEmail,
   deliveredOrderEmail,
 } from "../../helpers/email.js";
 import { isAuthenticate } from "../../helpers/user.js";
@@ -24,10 +23,10 @@ export const orderResolvers = {
     },
 
     async getOrdersTotal(_, {}, { user }) {
-      // isAuthenticate(user);
+      isAuthenticate(user);
       const _total = await Order.aggregate([
         {
-          // $match: { $not: { $state: "unfinish" } },
+          // $match: { state: { $not: "unfinish" } },
           $group: {
             _id: null,
             // is_paid: { $expr: true },
@@ -129,6 +128,7 @@ export const orderResolvers = {
       let _up = await _order.save();
       return { message: "Ok" };
     },
+
     async finishOrder(_, { order, token }) {
       let _order;
 
@@ -152,10 +152,8 @@ export const orderResolvers = {
       }
       throw new ApolloError("Nepodařilo se najít objednávku");
     },
-    async editOrder(
-      _,
-      { person, address, orderNumber, payment, delivery, order }
-    ) {
+
+    async editOrder(_, { person, address, orderNumber, order }) {
       //check person data:
       const personErrors = personValidator(person);
       //check address data:
@@ -196,6 +194,32 @@ export const orderResolvers = {
           return _order;
         }
       }
+    },
+
+    async sendOrder(_, { orderNumber }) {
+      let _order;
+
+      if (!orderNumber) throw new UserInputError("Zadej číslo objednávky!");
+
+      _order = await Order.findOne({ orderNumber: orderNumber }).populate(
+        "person",
+        " person_detail"
+      );
+      if (_order) {
+        let _person_detail = await PersonDetail.findOne({
+          _id: _order.person.person_detail,
+        });
+
+        _order.delivered_at = Date.now();
+        _order.is_deliver = true;
+        _order = await _order.save();
+
+        deliveredOrderEmail(_person_detail.email, _order.orderNumber);
+
+        return { message: "Objednávka byla expedována." };
+      }
+
+      throw new ApolloError("Neplatné číslo objednávky!");
     },
   },
 };

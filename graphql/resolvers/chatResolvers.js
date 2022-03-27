@@ -15,6 +15,8 @@ export const chatResolvers = {
         const _messages = Message.find({
           $or: [{ to: id }, { from: id }],
         });
+        // .sort("-createdAt")
+        // .limit(20);
         return _messages;
       }
       return [];

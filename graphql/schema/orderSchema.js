@@ -115,6 +115,7 @@ export const typeDefs = `
     createOrUpdateOrder(person: PersonData, address: AddressData, token: OrderTokenData): OrderToken!
     paymentDelivery(payment: PaymentData, delivery: DeliveryData, token: OrderTokenData!): Message
     finishOrder(order: OrderData, token: OrderTokenData): Order!
-    editOrder(orderNumber: String,  person: PersonData, address: AddressData, order: EditOrderData): Order
+    editOrder(orderNumber: String,  person: PersonData, address: AddressData, order: EditOrderData): Order    
+    sendOrder(orderNumber: String): Message    
   }
 `;

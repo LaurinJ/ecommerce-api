@@ -20,6 +20,7 @@ export const typeDefs = `
     categories: [Category]
     images: [String]
     imgurl: String
+    hidden: Boolean
   }
 
   input ProductInputData {
