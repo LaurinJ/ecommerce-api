@@ -109,6 +109,7 @@ export const typeDefs = `
     getOrdersTotal: OrdersTotal
     getOrder(orderNumber: String): Order!
     getOrders(params: FilterOrderData, limit: Int, skip: Int): Orders!
+    getUserOrders(limit: Int, skip: Int): Orders!
   }
 
   type Mutation {

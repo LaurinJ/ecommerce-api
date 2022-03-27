@@ -76,6 +76,34 @@ export const orderResolvers = {
       // const orders = await Product.find({}).skip(page).limit(limit);
       return { orders: [], pages: 0 };
     },
+
+    async getUserOrders(_, { limit = 12, skip = 1 }, { user }) {
+      isAuthenticate(user);
+
+      const page = (skip - 1) * limit;
+
+      // const _person = await Person.findOne({user: user._id})
+      // await Order.find({preson: _person._id})
+
+      // if (params && Object.keys(params).length !== 0) {
+      // const _params = ordersFilter(params);
+      const count = await Order.find({}).countDocuments();
+      const pages = Math.ceil(count / limit);
+
+      const orders = count
+        ? await Order.find({})
+            .populate("payment_method")
+            .populate("deliver_method")
+            .populate("person")
+            .sort("-createdAt")
+            .skip(page)
+            .limit(limit)
+        : [];
+      return { orders: orders, pages: pages };
+      // return orders;
+      // }
+      return { orders: [], pages: 0 };
+    },
   },
   Mutation: {
     async createOrUpdateOrder(_, { person, address, token }) {
