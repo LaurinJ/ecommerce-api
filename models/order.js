@@ -50,7 +50,7 @@ const orderSchema = new mongoose.Schema(
         "created",
         "completed",
         // "accepted",
-        "sent",
+        // "sent",
         "suspended",
         "canceled",
       ],

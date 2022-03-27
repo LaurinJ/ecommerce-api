@@ -9,6 +9,8 @@ import { orderValidator } from "../../validators/order.js";
 import { ordersFilter } from "../../helpers/ordersFilter.js";
 import {
   canceledOrderEmail,
+  completedOrderEmail,
+  suspendOrderEmail,
   confirmOrderEmail,
   deliveredOrderEmail,
 } from "../../helpers/email.js";
@@ -118,6 +120,7 @@ export const orderResolvers = {
 
       return { token: _order.token };
     },
+
     async paymentDelivery(_, { payment, delivery, token }) {
       if (!payment._id || !delivery._id) {
         throw new UserInputError("Nebyl zadán způsob platby nebo dopravy");
@@ -153,7 +156,9 @@ export const orderResolvers = {
       throw new ApolloError("Nepodařilo se najít objednávku");
     },
 
-    async editOrder(_, { person, address, orderNumber, order }) {
+    async editOrder(_, { person, address, orderNumber, order }, { user }) {
+      isAuthenticate(user);
+
       //check person data:
       const personErrors = personValidator(person);
       //check address data:
@@ -196,15 +201,20 @@ export const orderResolvers = {
       }
     },
 
-    async sendOrder(_, { orderNumber }) {
+    async sendOrder(_, { orderNumber }, { user }) {
       let _order;
 
+      isAuthenticate(user);
+
+      // check order number
       if (!orderNumber) throw new UserInputError("Zadej číslo objednávky!");
 
       _order = await Order.findOne({ orderNumber: orderNumber }).populate(
         "person",
         " person_detail"
       );
+
+      // if order exists, set delivery status and send email
       if (_order) {
         let _person_detail = await PersonDetail.findOne({
           _id: _order.person.person_detail,
@@ -212,13 +222,72 @@ export const orderResolvers = {
 
         _order.delivered_at = Date.now();
         _order.is_deliver = true;
+        _order.state = "completed";
         _order = await _order.save();
 
         deliveredOrderEmail(_person_detail.email, _order.orderNumber);
+        completedOrderEmail(_person_detail.email, _order.orderNumber);
 
         return { message: "Objednávka byla expedována." };
       }
+      throw new ApolloError("Neplatné číslo objednávky!");
+    },
 
+    async suspendOrder(_, { orderNumber }, { user }) {
+      let _order;
+
+      isAuthenticate(user);
+
+      // check order number
+      if (!orderNumber) throw new UserInputError("Zadej číslo objednávky!");
+
+      _order = await Order.findOne({ orderNumber: orderNumber }).populate(
+        "person",
+        " person_detail"
+      );
+
+      // if order exists, suspend order status and send email
+      if (_order) {
+        let _person_detail = await PersonDetail.findOne({
+          _id: _order.person.person_detail,
+        });
+
+        _order.state = "suspended";
+        _order = await _order.save();
+
+        suspendOrderEmail(_person_detail.email, _order.orderNumber);
+
+        return { message: "Objednávka byla pozastavená." };
+      }
+      throw new ApolloError("Neplatné číslo objednávky!");
+    },
+
+    async cancelOrder(_, { orderNumber }, { user }) {
+      let _order;
+
+      isAuthenticate(user);
+
+      // check order number
+      if (!orderNumber) throw new UserInputError("Zadej číslo objednávky!");
+
+      _order = await Order.findOne({ orderNumber: orderNumber }).populate(
+        "person",
+        " person_detail"
+      );
+
+      // if order exists, cancel order status and send email
+      if (_order) {
+        let _person_detail = await PersonDetail.findOne({
+          _id: _order.person.person_detail,
+        });
+
+        _order.state = "canceled";
+        _order = await _order.save();
+
+        canceledOrderEmail(_person_detail.email, _order.orderNumber);
+
+        return { message: "Objednávka byla zrušená." };
+      }
       throw new ApolloError("Neplatné číslo objednávky!");
     },
   },

@@ -61,12 +61,30 @@ export const deliveredOrderEmail = async (email, orderNumber) => {
   });
 };
 
+export const completedOrderEmail = async (email, orderNumber) => {
+  await transporter.sendMail({
+    to: email, // list of receivers
+    subject: "Objednávka byla dokončená.", // Subject line
+    text: `Vaše objednávka č. ${orderNumber} byla dokončená.`, // plain text body
+    html: `<p>Vaše objednávka č. ${orderNumber} byla dokončená.</p>`, // html body
+  });
+};
+
 export const canceledOrderEmail = async (email, orderNumber) => {
   await transporter.sendMail({
     to: email, // list of receivers
     subject: "Objednávka byla zrušená.", // Subject line
     text: `Vaše objednávka č. ${orderNumber} byla zrušená.`, // plain text body
     html: `<p>Vaše objednávka č. ${orderNumber} byla zrušená.</p>`, // html body
+  });
+};
+
+export const suspendOrderEmail = async (email, orderNumber) => {
+  await transporter.sendMail({
+    to: email, // list of receivers
+    subject: "Objednávka byla pozastavená.", // Subject line
+    text: `Vaše objednávka č. ${orderNumber} byla pozastavená.`, // plain text body
+    html: `<p>Vaše objednávka č. ${orderNumber} byla pozastavená.</p>`, // html body
   });
 };
 

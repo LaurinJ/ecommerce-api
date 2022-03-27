@@ -117,5 +117,7 @@ export const typeDefs = `
     finishOrder(order: OrderData, token: OrderTokenData): Order!
     editOrder(orderNumber: String,  person: PersonData, address: AddressData, order: EditOrderData): Order    
     sendOrder(orderNumber: String): Message    
+    suspendOrder(orderNumber: String): Message    
+    cancelOrder(orderNumber: String): Message    
   }
 `;
