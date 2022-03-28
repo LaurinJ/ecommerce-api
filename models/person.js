@@ -6,6 +6,7 @@ const personSchema = new mongoose.Schema(
     user: {
       type: ObjectId,
       ref: "User",
+      default: null,
     },
     person_detail: {
       type: ObjectId,

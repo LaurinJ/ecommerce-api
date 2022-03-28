@@ -4,7 +4,7 @@ import PDFDocument from "pdfkit";
 export async function createInvoice(invoice, person, path) {
   let doc = new PDFDocument({ size: "A4", margin: 50 });
 
-  generateHeader(doc);
+  generateHeader(doc, invoice);
   generateSupplierInformation(doc);
   generateCustomerInformation(doc, person);
   generateOrderInformation(doc, invoice);
@@ -15,13 +15,13 @@ export async function createInvoice(invoice, person, path) {
   doc.pipe(fs.createWriteStream("invoices/" + path + ".pdf"));
 }
 
-function generateHeader(doc) {
+function generateHeader(doc, invoice) {
   doc
     .image("public/bigbuy.jpg", 50, 45, { width: 150 })
     .fillColor("#444444")
     .font("fonts/Roboto-Black.ttf")
     .fontSize(20)
-    .text("FAKTURA - č. 31000217", 200, 50, { align: "right" })
+    .text(`FAKTURA - č. ${invoice.orderNumber}`, 200, 50, { align: "right" })
     .moveDown();
 }
 
@@ -67,7 +67,7 @@ function generateCustomerInformation(doc, person) {
       300,
       customerInformationTop + 15
     )
-    .text(person.address.postal_code, 300, customerInformationTop + 30)
+    .text(person.address.postCode, 300, customerInformationTop + 30)
     .text(person.address.village, 330, customerInformationTop + 30)
     .text("Česká republika", 300, customerInformationTop + 45)
     .moveDown();
@@ -88,7 +88,7 @@ function generateOrderInformation(doc, invoice) {
     .fontSize(10)
     .font("fonts/Roboto-Regular.ttf")
     .text("Číslo objednávky:", 50, customerInformationTop)
-    .text(invoice.invoice_nr, 150, customerInformationTop)
+    .text(invoice.orderNumber, 150, customerInformationTop)
     .text("Datum objednávky:", 50, customerInformationTop + 15)
     .text(formatDate(new Date()), 150, customerInformationTop + 15)
     .text("Způsob úhrady: ", 50, customerInformationTop + 30)

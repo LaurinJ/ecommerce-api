@@ -71,9 +71,7 @@ export const orderResolvers = {
               .limit(limit)
           : [];
         return { orders: orders, pages: pages };
-        // return orders;
       }
-      // const orders = await Product.find({}).skip(page).limit(limit);
       return { orders: [], pages: 0 };
     },
 
@@ -82,31 +80,33 @@ export const orderResolvers = {
 
       const page = (skip - 1) * limit;
 
-      // const _person = await Person.findOne({user: user._id})
-      // await Order.find({preson: _person._id})
+      const _person = await Person.findOne({ user: user._id });
+      if (_person) {
+        const count = await Order.find({
+          person: _person._id,
+          state: { $not: { $regex: "unfinish" } },
+        }).countDocuments();
+        const pages = Math.ceil(count / limit);
 
-      // if (params && Object.keys(params).length !== 0) {
-      // const _params = ordersFilter(params);
-      const count = await Order.find({}).countDocuments();
-      const pages = Math.ceil(count / limit);
-
-      const orders = count
-        ? await Order.find({})
-            .populate("payment_method")
-            .populate("deliver_method")
-            .populate("person")
-            .sort("-createdAt")
-            .skip(page)
-            .limit(limit)
-        : [];
-      return { orders: orders, pages: pages };
-      // return orders;
-      // }
+        const orders = count
+          ? await Order.find({
+              person: _person._id,
+              state: { $not: { $regex: "unfinish" } },
+            })
+              // .populate("payment_method")
+              // .populate("deliver_method")
+              // .populate("person")
+              .sort("-createdAt")
+              .skip(page)
+              .limit(limit)
+          : [];
+        return { orders: orders, pages: pages };
+      }
       return { orders: [], pages: 0 };
     },
   },
   Mutation: {
-    async createOrUpdateOrder(_, { person, address, token }) {
+    async createOrUpdateOrder(_, { person, address, token }, { user }) {
       //check person data:
       const personErrors = personValidator(person);
       //check address data:
@@ -139,6 +139,7 @@ export const orderResolvers = {
         let _person_detail = await new PersonDetail(person).save();
         let _address = await new Address(address).save();
         let _person = await new Person({
+          user: user._id,
           person_detail: _person_detail._id,
           address: _address._id,
           delivery_adress: _address._id,
