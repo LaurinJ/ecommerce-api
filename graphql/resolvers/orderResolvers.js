@@ -80,22 +80,20 @@ export const orderResolvers = {
 
       const page = (skip - 1) * limit;
 
-      const _person = await Person.findOne({ user: user._id });
-      if (_person) {
+      const _person = await Person.find({ user: user._id }, "_id");
+      if (_person.length) {
+        const id = _person.map((person) => person._id);
         const count = await Order.find({
-          person: _person._id,
+          person: { $in: id },
           state: { $not: { $regex: "unfinish" } },
         }).countDocuments();
         const pages = Math.ceil(count / limit);
 
         const orders = count
           ? await Order.find({
-              person: _person._id,
+              person: { $in: id },
               state: { $not: { $regex: "unfinish" } },
             })
-              // .populate("payment_method")
-              // .populate("deliver_method")
-              // .populate("person")
               .sort("-createdAt")
               .skip(page)
               .limit(limit)
@@ -136,15 +134,15 @@ export const orderResolvers = {
           );
         }
       } else {
-        let _person_detail = await new PersonDetail(person).save();
-        let _address = await new Address(address).save();
-        let _person = await new Person({
+        let _person_detail = new PersonDetail(person).save();
+        let _address = new Address(address).save();
+        let _person = new Person({
           user: user._id,
           person_detail: _person_detail._id,
           address: _address._id,
           delivery_adress: _address._id,
         }).save();
-        _order = await new Order({ person: _person._id }).save();
+        _order = new Order({ person: _person._id }).save();
       }
 
       return { token: _order.token };
