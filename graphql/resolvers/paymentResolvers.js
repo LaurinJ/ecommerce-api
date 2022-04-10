@@ -14,10 +14,13 @@ export const paymentResolvers = {
       }
       return payment;
     },
+
     async getPaymentMethods(_, { limit = 10, skip = 0 }) {
       const page = skip <= 1 ? 0 : skip * limit - 10;
-      const payments = await Payment.find({}).skip(page).limit(limit);
-      if (payments.length === 0) {
+      const payments = await Payment.find({ hidden: false })
+        .skip(page)
+        .limit(limit);
+      if (payments.length) {
         throw new Error("Nebyli nalezené způsoby platby");
       }
       return [...payments];
