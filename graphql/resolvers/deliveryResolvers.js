@@ -12,10 +12,13 @@ export const deliveryResolvers = {
       }
       return delivery;
     },
+
     async getDeliveryMethods(_, { limit = 10, skip = 0 }) {
       const page = skip <= 1 ? 0 : skip * limit - 10;
-      const delivers = await Deliver.find({}).skip(page).limit(limit);
-      if (delivers.length === 0) {
+      const delivers = await Deliver.find({ hidden: false })
+        .skip(page)
+        .limit(limit);
+      if (delivers.length) {
         throw new Error("Nebyli nalezené způsoby dopravy");
       }
       return [...delivers];

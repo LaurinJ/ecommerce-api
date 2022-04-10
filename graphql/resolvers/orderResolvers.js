@@ -134,15 +134,15 @@ export const orderResolvers = {
           );
         }
       } else {
-        let _person_detail = new PersonDetail(person).save();
-        let _address = new Address(address).save();
-        let _person = new Person({
+        let _person_detail = await new PersonDetail(person).save();
+        let _address = await new Address(address).save();
+        let _person = await new Person({
           user: user._id,
           person_detail: _person_detail._id,
           address: _address._id,
           delivery_adress: _address._id,
         }).save();
-        _order = new Order({ person: _person._id }).save();
+        _order = await new Order({ person: _person._id }).save();
       }
 
       return { token: _order.token };

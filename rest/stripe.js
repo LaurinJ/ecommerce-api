@@ -16,6 +16,7 @@ router.post(
   express.raw({ type: "application/json" }),
   async function (req, res) {
     let event;
+    console.log("sig");
     if (endpointSecret) {
       // Get the signature sent by Stripe
       const signature = req.headers["stripe-signature"];
