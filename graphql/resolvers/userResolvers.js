@@ -302,5 +302,21 @@ export const userResolvers = {
       await _favorite.save();
       return { message: "Produkt byl přidán do oblíbených" };
     },
+
+    async deleteFavorite(_, { id }, { user }) {
+      isAuthenticate(user);
+      // check id
+      if (!id) throw new ApolloError("Neplatné id!");
+      // find and delete favorite product
+      const _favorite = await FavoriteProduct.findOneAndDelete({
+        user: user._id,
+        product: id,
+      });
+      if (_favorite)
+        return {
+          message: "Produkt byl odstraněn z oblibenych!",
+        };
+      return { message: "Něco se pokazilo!" };
+    },
   },
 };

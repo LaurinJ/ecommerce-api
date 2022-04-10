@@ -74,5 +74,6 @@ export const typeDefs = `
     sendChangeEmail(email: String!): Message
     subscribeToNews(email: String!): Message
     addToFavorites(id: String): Message
+    deleteFavorite(id: String): Message
   }
 `;
