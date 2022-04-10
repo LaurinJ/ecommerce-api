@@ -9,12 +9,14 @@ const requireSignin = (req, res, next) => {
       req.headers.authorization.split("Bearer")[1].trim(),
       process.env.ACCESS_TOKEN_SECRET,
       (err, decodedToken) => {
+        if (err) return res.status(401).json({ error: "Něco se pokazilo!" });
         req.user = decodedToken;
         next();
       }
     );
+  } else {
+    return res.status(401).json({ error: "Nejsi přihlášený/ná!" });
   }
-  return res.status(401).json({ error: "Nejsi přihlášen/ná!" });
 };
 
 // route for handling PDF request

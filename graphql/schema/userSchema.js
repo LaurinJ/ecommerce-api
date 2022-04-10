@@ -60,6 +60,7 @@ export const typeDefs = `
   type Query {
     getUsersCount: UsersCount
     checkResetPasswordToken(token: String!): CheckToken!
+    getFavoriteProducts(limit: Int, skip: Int): FilterProducts
   }
 
   type Mutation {
@@ -72,5 +73,6 @@ export const typeDefs = `
     resetPassword(passwords: ResetPasswordData, email: String): Message
     sendChangeEmail(email: String!): Message
     subscribeToNews(email: String!): Message
+    addToFavorites(id: String): Message
   }
 `;

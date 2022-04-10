@@ -14,10 +14,10 @@ export const categoryResolvers = {
 
     async getCategories(_, { limit = 10, skip = 0 }) {
       const page = skip <= 1 ? 0 : skip * limit - 10;
-      const categories = await Category.find({ hidden: false })
+      const categories = await Category.find({ hidden: true })
         .skip(page)
         .limit(limit);
-      if (categories.length === 0) {
+      if (!categories.length) {
         throw new Error("Nebyli nalezené kategorie");
       }
       return [...categories];

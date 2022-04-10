@@ -5,6 +5,7 @@ import { OAuth2Client } from "google-auth-library";
 import { User } from "../../models/user.js";
 import { Token } from "../../models/token.js";
 import { Email } from "../../models/email.js";
+import { FavoriteProduct } from "../../models/favoriteProduct.js";
 import {
   passwordValidator,
   changePasswordValidator,
@@ -32,6 +33,36 @@ export const userResolvers = {
       } catch {
         return { status: false, email: "" };
       }
+    },
+
+    async getFavoriteProducts(_, { limit = 10, skip = 1 }, { user }) {
+      // isAuthenticate(user);
+
+      const page = (skip - 1) * limit;
+
+      // search the number of favorites
+      const count = await FavoriteProduct.find({
+        user: "61a7e9fbc526ca5eb81447ba",
+        // user: user._id,
+      }).countDocuments();
+      // count pages
+      const pages = Math.ceil(Number(count) / Number(limit));
+
+      // search for products or return an empty field
+      let products = count
+        ? await FavoriteProduct.find({
+            user: "61a7e9fbc526ca5eb81447ba",
+          })
+            .populate("product")
+            .sort("-createdAt")
+            .skip(page)
+            .limit(limit)
+        : [];
+
+      // pull products out of the result
+      products = products.map((item) => item.product);
+
+      return { products: products, pages: pages };
     },
   },
   Mutation: {
@@ -252,6 +283,24 @@ export const userResolvers = {
         return { message: "Ok" };
       }
       throw new UserInputError(error);
+    },
+
+    async addToFavorites(_, { id }, { user }) {
+      isAuthenticate(user);
+      // check id
+      if (!id) throw new ApolloError("Neplatné id!");
+      // check if it has not already been added
+      const exist = await FavoriteProduct.findOne({
+        user: user._id,
+        product: id,
+      });
+      if (exist)
+        return {
+          message: "Produkt už byl přidán mezi oblíbené",
+        };
+      const _favorite = new FavoriteProduct({ user: user._id, product: id });
+      await _favorite.save();
+      return { message: "Produkt byl přidán do oblíbených" };
     },
   },
 };

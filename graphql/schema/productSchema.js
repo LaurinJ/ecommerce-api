@@ -36,10 +36,6 @@ export const typeDefs = `
     categories: [ID]
   }
   
-  type ProductData {
-    product: [Product!]!
-  }
-
   input Slug {
     slug: String!
   }
@@ -53,7 +49,7 @@ export const typeDefs = `
   }
 
   type FilterProducts{
-    products: [Product]
+    products: [Product]!
     pages: Int
   }
 
