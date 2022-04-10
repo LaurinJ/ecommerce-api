@@ -11,9 +11,12 @@ export const categoryResolvers = {
       }
       return category;
     },
+
     async getCategories(_, { limit = 10, skip = 0 }) {
       const page = skip <= 1 ? 0 : skip * limit - 10;
-      const categories = await Category.find({}).skip(page).limit(limit);
+      const categories = await Category.find({ hidden: false })
+        .skip(page)
+        .limit(limit);
       if (categories.length === 0) {
         throw new Error("Nebyli nalezené kategorie");
       }
@@ -36,6 +39,7 @@ export const categoryResolvers = {
 
       return data._doc;
     },
+
     async editCategory(_, { category }) {
       //check category data:
       if (!category.name || !category.name.length) {
