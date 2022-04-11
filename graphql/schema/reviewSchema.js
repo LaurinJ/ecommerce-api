@@ -2,6 +2,7 @@ export const typeDefs = `
   type Review {
     _id: ID
     user: User
+    product: Product
     content: String
     rating: Int
     createdAt: String
@@ -9,7 +10,7 @@ export const typeDefs = `
   
 
   type Reviews {
-    reviews: [Review]
+    reviews: [Review]!
     pages: Int
   }
 
@@ -21,6 +22,7 @@ export const typeDefs = `
   
   type Query {
     getReviews(product_id: ID!, limit: Int, skip: Int): Reviews!
+    getUserReviews(limit: Int, skip: Int): Reviews!
   }
 
   type Mutation {
