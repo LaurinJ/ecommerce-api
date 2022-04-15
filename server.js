@@ -11,8 +11,8 @@ import { graphqlUploadExpress } from "graphql-upload";
 import mongoose from "mongoose";
 import cors from "cors";
 import { contextMiddleware } from "./helpers/contextMiddleware.js";
-import { router as stripeRoute } from "./rest/stripe.js";
 import { router as pdfRoute } from "./rest/downloadPdf.js";
+import { router as paymentRoute } from "./rest/routes/payment.js";
 
 const schema = makeExecutableSchema({ typeDefs, resolvers });
 
@@ -22,8 +22,8 @@ async function startApolloServer() {
   };
   const app = express();
   app.use(cors(corsOptions));
-  app.use("/", stripeRoute);
   app.use("/", pdfRoute);
+  app.use("/", paymentRoute);
   app.use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 }));
   app.use(express.static("images"));
   const httpServer = http.createServer(app);

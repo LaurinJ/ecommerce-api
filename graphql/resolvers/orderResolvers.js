@@ -163,7 +163,7 @@ export const orderResolvers = {
       let _order;
 
       if (token.token) {
-        _order = await Order.findOne(token);
+        _order = await Order.findOne(token).populate("payment_method");
         if (_order && order) {
           _order.orderNumber = Date.now();
           _order.total_price = order.total_price;

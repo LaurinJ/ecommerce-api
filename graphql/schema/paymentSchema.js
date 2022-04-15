@@ -25,5 +25,6 @@ export const typeDefs = `
     createPayment(payment: PaymentData!, image: Upload): Payment!
     editPayment(payment: PaymentData!, image: Upload): Payment!
     createStripePayment(orderNumber: String): Url!
+    createPayPalPayment(orderNumber: String): Url!
   }
 `;
