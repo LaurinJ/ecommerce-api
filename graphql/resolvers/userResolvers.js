@@ -36,14 +36,13 @@ export const userResolvers = {
     },
 
     async getFavoriteProducts(_, { limit = 10, skip = 1 }, { user }) {
-      // isAuthenticate(user);
+      isAuthenticate(user);
 
       const page = (skip - 1) * limit;
 
       // search the number of favorites
       const count = await FavoriteProduct.find({
-        user: "61a7e9fbc526ca5eb81447ba",
-        // user: user._id,
+        user: user._id,
       }).countDocuments();
       // count pages
       const pages = Math.ceil(Number(count) / Number(limit));
@@ -51,7 +50,7 @@ export const userResolvers = {
       // search for products or return an empty field
       let products = count
         ? await FavoriteProduct.find({
-            user: "61a7e9fbc526ca5eb81447ba",
+            user: user._id,
           })
             .populate("product")
             .sort("-createdAt")
