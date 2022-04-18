@@ -38,8 +38,9 @@ export const captureOrder = async (req, res) => {
         let _person = await Person.findById(_order.person).populate(
           "person_detail address"
         );
-        createInvoice(_order, _person, _order.orderNumber);
-        paidOrderEmail(_person.person_detail.email, _order.orderNumber);
+        createInvoice(_order, _person, _order.orderNumber).then(() => {
+          paidOrderEmail(_person.person_detail.email, _order.orderNumber);
+        });
         return res.redirect(`${process.env.FRONTEND_URL}/checkout/success`);
       }
     }
