@@ -50,7 +50,7 @@ export const deliveryResolvers = {
         img = await uploadProcess(image, "deliver/");
       }
       delete delivery._id;
-      const newDelivery = new Deliver({ ...delivery, image: img?._path });
+      const newDelivery = new Deliver({ ...delivery, image: img });
 
       const data = await newDelivery.save();
 
@@ -68,7 +68,7 @@ export const deliveryResolvers = {
       let img;
       if (image && !image.length) {
         img = await uploadProcess(image, "deliver/");
-        update = { ...delivery, image: img?._path };
+        update = { ...delivery, image: img };
       }
       const _delivery = await Deliver.findOneAndUpdate(
         { _id: delivery._id },
