@@ -1,6 +1,7 @@
 import { UserInputError } from "apollo-server-express";
-import { Category } from "../../models/category.js";
 import slugify from "slugify";
+import { Category } from "../../models/category.js";
+import { isAuthenticate } from "../../helpers/user.js";
 
 export const categoryResolvers = {
   Query: {
@@ -12,15 +13,26 @@ export const categoryResolvers = {
       return category;
     },
 
-    async getCategories(_, { limit = 10, skip = 0 }) {
-      const page = skip <= 1 ? 0 : skip * limit - 10;
-      const categories = await Category.find({ hidden: true })
-        .skip(page)
-        .limit(limit);
-      if (!categories.length) {
-        throw new Error("Nebyli nalezené kategorie");
-      }
+    async getCategories() {
+      const categories = await Category.find({ hidden: true });
+      if (!categories.length) throw new Error("Nebyli nalezené kategorie");
       return [...categories];
+    },
+
+    async getAllCategories(_, { limit = 10, skip = 1 }, { user }) {
+      isAuthenticate(user);
+
+      const page = (skip - 1) * limit;
+
+      // get the number of categories
+      const count = await Category.find({}).countDocuments();
+      const pages = Math.ceil(count / limit);
+
+      // get categories
+      const categories = count
+        ? await Category.find({}).skip(page).limit(limit)
+        : [];
+      return { categories: categories, pages: pages };
     },
   },
   Mutation: {

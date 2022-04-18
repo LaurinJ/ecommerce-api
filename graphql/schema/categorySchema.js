@@ -12,9 +12,15 @@ export const typeDefs = `
       hidden: Boolean
   }
 
+  type Categories {
+    categories: [Category]!
+    pages: Int
+}
+
   type Query {
     getCategory(id: String): Category
-    getCategories(limit: Int, skip: Int): [Category]!
+    getCategories: [Category]!
+    getAllCategories(limit: Int, skip: Int): Categories
   }
 
   type Mutation {
