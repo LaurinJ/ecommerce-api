@@ -25,7 +25,7 @@ export const deliveryResolvers = {
 
       const page = (skip - 1) * limit;
 
-      // get the number of delivery method
+      // get the number of delivery methods
       const count = await Deliver.find({}).countDocuments();
       const pages = Math.ceil(count / limit);
 

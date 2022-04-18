@@ -12,13 +12,19 @@ export const typeDefs = `
       hidden: Boolean
   }
 
+  type PaymentMethods {
+    methods: [Payment]!
+    pages: Int!
+}
+
   type Url {
     url: String
   }
 
   type Query {
     getPaymentMethod(id: String): Payment
-    getPaymentMethods(limit: Int, skip: Int): [Payment]!
+    getPaymentMethods: [Payment]!
+    getAllPaymentMethods(limit: Int, skip: Int): PaymentMethods!
   }
 
   type Mutation {
