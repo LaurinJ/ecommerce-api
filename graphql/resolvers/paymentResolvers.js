@@ -68,7 +68,7 @@ export const paymentResolvers = {
       }
       let update = { ...payment };
       let img;
-      if (image) {
+      if (image && !image.length) {
         img = await uploadProcess(image, "payment/");
         update = { ...payment, image: img };
       }
