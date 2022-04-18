@@ -14,9 +14,15 @@ export const typeDefs = `
       hidden: Boolean
   }
 
+  type DeliveryMethods {
+    methods: [Delivery]!
+    pages: Int!
+}  
+
   type Query {
     getDeliveryMethod(id: String): Delivery
-    getDeliveryMethods(limit: Int, skip: Int): [Delivery]!
+    getDeliveryMethods: [Delivery]!
+    getAllDeliveryMethods(limit: Int, skip: Int): DeliveryMethods!
   }
 
   type Mutation {

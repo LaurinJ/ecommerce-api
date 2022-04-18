@@ -90,6 +90,7 @@ export const userResolvers = {
         throw new ApolloError(error.message, 401);
       }
     },
+
     async createUser(_, { user }) {
       //check if username is already taken:
       let _user = await User.findOne({ email: user.email });
@@ -245,7 +246,7 @@ export const userResolvers = {
       }
       // send email
       passwordResetEmail(email);
-      return { message: "Email byl odeslán!" };
+      return { message: "Email na změnu hesla byl odeslán!" };
     },
 
     async resetPassword(_, { passwords, email }) {

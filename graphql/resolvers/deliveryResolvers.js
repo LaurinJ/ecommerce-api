@@ -2,6 +2,7 @@ import { UserInputError } from "apollo-server-express";
 import { Deliver } from "../../models/deliver.js";
 import { deliverValidator } from "../../validators/deliver.js";
 import { uploadProcess } from "../../helpers/image.js";
+import { isAuthenticate } from "../../helpers/user.js";
 
 export const deliveryResolvers = {
   Query: {
@@ -13,15 +14,26 @@ export const deliveryResolvers = {
       return delivery;
     },
 
-    async getDeliveryMethods(_, { limit = 10, skip = 0 }) {
-      const page = skip <= 1 ? 0 : skip * limit - 10;
-      const delivers = await Deliver.find({ hidden: true })
-        .skip(page)
-        .limit(limit);
-      if (!delivers.length) {
-        throw new Error("Nebyli nalezené způsoby dopravy");
-      }
+    async getDeliveryMethods() {
+      const delivers = await Deliver.find({ hidden: true });
+      if (!delivers.length) throw new Error("Nebyli nalezené způsoby dopravy");
       return [...delivers];
+    },
+
+    async getAllDeliveryMethods(_, { limit = 10, skip = 1 }, { user }) {
+      isAuthenticate(user);
+
+      const page = (skip - 1) * limit;
+
+      // get the number of delivery method
+      const count = await Deliver.find({}).countDocuments();
+      const pages = Math.ceil(count / limit);
+
+      // get delivery
+      const delivery = count
+        ? await Deliver.find({}).skip(page).limit(limit)
+        : [];
+      return { methods: delivery, pages: pages };
     },
   },
   Mutation: {
