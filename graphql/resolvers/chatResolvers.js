@@ -32,13 +32,11 @@ export const chatResolvers = {
       isAuthenticate(user);
 
       const page = (skip - 1) * limit;
-      const count = await ContactMessage.find({
-        answer: false,
-      }).countDocuments();
+      const count = await ContactMessage.find({}).countDocuments();
       const pages = Math.ceil(count / limit);
 
       const messages = count
-        ? await ContactMessage.find({ answer: false })
+        ? await ContactMessage.find({})
             .sort("-createdAt")
             .skip(page)
             .limit(limit)
@@ -100,20 +98,24 @@ export const chatResolvers = {
       return data._doc;
     },
 
-    async answerContactMessage(_, { message }, { user }) {
+    async answerContactMessage(_, { id, message }, { user }) {
       isAuthenticate(user);
 
       //check contact data
       const messageErrors = contactMessageValidator(message);
-      if (Object.keys(messageErrors).length !== 0) {
+      if (Object.keys(messageErrors).length !== 0 && id) {
         throw new UserInputError("Invalid argument value", {
           errors: messageErrors,
         });
       }
-      const _message = new ContactMessage({ ...message, answer: true });
-      const data = await _message.save();
-      contactMessageEmail(data.email, data.content);
-      return data._doc;
+
+      let _message = await ContactMessage.findById(id);
+      if (_message) {
+        _message.answer = true;
+        _message.save();
+        contactMessageEmail(message.email, message.content);
+      }
+      return { message: "Updated" };
     },
 
     async readContactMessage(_, { id }, { user }) {
