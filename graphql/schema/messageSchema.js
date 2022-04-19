@@ -41,11 +41,16 @@ export const typeDefs = `
     pages: Int!
   }
 
+  type ContactMessagesCount {
+    messages: Int
+  }
+
   type Query {
     getMessages(id:String): [ChatMessage]!
     getAdminToken: AdminChatToken
     getContactMessages(limit: Int, skip: Int): ContactMessages!
     getContactMessage(id: String!): ContactMessage!
+    getContactMessagesCount: ContactMessagesCount
   }
 
   type Mutation {

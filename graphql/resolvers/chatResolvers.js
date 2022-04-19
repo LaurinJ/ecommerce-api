@@ -52,6 +52,12 @@ export const chatResolvers = {
       if (!message) throw new UserInputError("Tato zpráva neexistuje!");
       return message;
     },
+
+    async getContactMessagesCount(_, __, { user }) {
+      isAuthenticate(user);
+      const count = await ContactMessage.find({ read: false }).countDocuments();
+      return { messages: count || 0 };
+    },
   },
   Mutation: {
     async sendMessage(_, { message }) {
