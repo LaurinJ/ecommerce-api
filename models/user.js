@@ -1,12 +1,9 @@
-// import { Schema, model } from "mongoose";
-// const bcrypt = require("bcryptjs");
-// const jwt = require("jsonwebtoken");
-// const Token = require("./token");
-
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { Token } from "./token.js";
+
+const { ObjectId } = mongoose.Schema;
 
 const userSchema = new mongoose.Schema(
   {
@@ -29,6 +26,10 @@ const userSchema = new mongoose.Schema(
     role: {
       type: Number,
       default: 0,
+    },
+    profile: {
+      type: ObjectId,
+      ref: "Profile",
     },
   },
   { timestamp: true }

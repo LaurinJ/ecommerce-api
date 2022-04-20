@@ -8,7 +8,13 @@ export const typeDefs = `
     name: String!
     email: String!
     role: Int
+    profile: Profile
   }
+
+  type Profile {
+    _id: ID
+    profile_image: String
+  }  
 
   type User_Token {
     accessToken: String!
@@ -75,5 +81,6 @@ export const typeDefs = `
     subscribeToNews(email: String!): Message
     addToFavorites(id: String): Message
     deleteFavorite(id: String): Message
+    editProfile(image: Upload): Message
   }
 `;

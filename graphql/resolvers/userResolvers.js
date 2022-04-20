@@ -6,6 +6,7 @@ import { User } from "../../models/user.js";
 import { Token } from "../../models/token.js";
 import { Email } from "../../models/email.js";
 import { FavoriteProduct } from "../../models/favoriteProduct.js";
+import { Profile } from "../../models/profile.js";
 import {
   passwordValidator,
   changePasswordValidator,
@@ -14,6 +15,7 @@ import { emailValidator } from "../../validators/email.js";
 import { isAuthenticate } from "../../helpers/user.js";
 import { passwordResetEmail } from "../../helpers/email.js";
 import { checkToken } from "../../helpers/token.js";
+import { uploadProcess } from "../../helpers/image.js";
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -68,7 +70,10 @@ export const userResolvers = {
     async login(_, { user }) {
       try {
         //check if user exists in database:
-        let _user = await User.findOne({ email: user.email });
+        let _user = await User.findOne({ email: user.email }).populate(
+          "profile",
+          "profile_image"
+        );
         //send error if no user found:
         if (!_user) {
           throw new UserInputError("Uživatel nebyl nalezen!");
@@ -79,6 +84,7 @@ export const userResolvers = {
             //generate a pair of tokens if valid and send
             let accessToken = await _user.createAccessToken();
             let refreshToken = await _user.createRefreshToken();
+            delete _user.password;
             return { accessToken, refreshToken, user: _user };
           } else {
             //send error if password is invalid
@@ -177,7 +183,10 @@ export const userResolvers = {
       const { email_verified, email, name, jti } = response.payload;
       // check if the email is verified
       if (email_verified) {
-        user = await User.findOne({ email: email }).exec();
+        user = await User.findOne({ email: email }).populate(
+          "profile",
+          "profile_image"
+        );
         // if the user exists, create a token or register the user
         if (user) {
           let accessToken = await user.createAccessToken();
@@ -316,6 +325,20 @@ export const userResolvers = {
         return {
           message: "Produkt byl odstraněn z oblibenych!",
         };
+      return { message: "Něco se pokazilo!" };
+    },
+
+    async editProfile(_, { image }, { user }) {
+      isAuthenticate(user);
+
+      let img;
+      if (image) {
+        img = await uploadProcess(image, "profile/");
+        const profile = await Profile.findOne({ user: user._id });
+        profile.profile_image = img;
+        await profile.save();
+      }
+
       return { message: "Něco se pokazilo!" };
     },
   },
