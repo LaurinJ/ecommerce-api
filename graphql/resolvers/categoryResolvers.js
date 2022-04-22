@@ -68,5 +68,18 @@ export const categoryResolvers = {
 
       return _category._doc;
     },
+
+    async deleteCategory(_, { id }) {
+      //check category data:
+      if (id) {
+        throw new UserInputError("Invalid argument value", {
+          errors: { name: "Toto pole je povinné" },
+        });
+      }
+
+      const _category = await Category.findOneAndDelete({ _id: category._id });
+
+      return _category._doc;
+    },
   },
 };
