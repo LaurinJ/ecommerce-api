@@ -26,5 +26,6 @@ export const typeDefs = `
   type Mutation {
     createCategory(category: CategoryData!): Category!
     editCategory(category: CategoryData!): Category!
+    deleteCategory(id: String!): Category!
   }
 `;

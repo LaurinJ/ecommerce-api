@@ -77,7 +77,7 @@ export const categoryResolvers = {
         });
       }
 
-      const _category = await Category.findOneAndDelete({ _id: category._id });
+      const _category = await Category.findOneAndDelete({ _id: id });
 
       return _category._doc;
     },
