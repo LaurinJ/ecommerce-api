@@ -63,6 +63,8 @@ export const typeDefs = `
     users: Int
   }
 
+  union EditProfile = Message | Profile
+
   type Query {
     getUsersCount: UsersCount
     checkResetPasswordToken(token: String!): CheckToken!
@@ -81,6 +83,6 @@ export const typeDefs = `
     subscribeToNews(email: String!): Message
     addToFavorites(id: String): Message
     deleteFavorite(id: String): Message
-    editProfile(image: Upload): Message
+    editProfile(image: Upload): EditProfile
   }
 `;

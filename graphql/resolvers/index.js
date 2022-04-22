@@ -8,6 +8,7 @@ import { categoryResolvers } from "./categoryResolvers.js";
 import { reviewResolvers } from "./reviewResolvers.js";
 
 export const resolvers = {
+  EditProfile: { ...userResolvers.EditProfile },
   Query: {
     ...productResolvers.Query,
     ...userResolvers.Query,

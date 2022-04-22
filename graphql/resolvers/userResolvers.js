@@ -20,6 +20,17 @@ import { uploadProcess } from "../../helpers/image.js";
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 export const userResolvers = {
+  EditProfile: {
+    __resolveType: (obj) => {
+      if (obj.message) {
+        return "Message";
+      }
+      if (obj.profile_image) {
+        return "Profile";
+      }
+      return null;
+    },
+  },
   Query: {
     async getUsersCount(_, {}, { user }) {
       isAuthenticate(user);
@@ -331,12 +342,16 @@ export const userResolvers = {
     async editProfile(_, { image }, { user }) {
       isAuthenticate(user);
 
-      let img;
       if (image) {
-        img = await uploadProcess(image, "profile/");
-        const profile = await Profile.findOne({ user: user._id });
-        profile.profile_image = img;
-        await profile.save();
+        const img = await uploadProcess(image, "profile/");
+        const _user = await User.findById(user._id).populate("profile");
+        if (_user) {
+          let profile = await Profile.findById(_user.profile._id);
+          profile.profile_image = img;
+          const data = await profile.save();
+          return data;
+        }
+        return { message: "Něco se pokazilo!" };
       }
 
       return { message: "Něco se pokazilo!" };
