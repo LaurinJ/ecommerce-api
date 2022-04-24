@@ -2,7 +2,8 @@ import { ApolloError, UserInputError } from "apollo-server-express";
 import { Payment } from "../../models/payment.js";
 import { Order } from "../../models/order.js";
 import { uploadProcess } from "../../helpers/image.js";
-import { isAuthenticate } from "../../helpers/user.js";
+import { isAdmin } from "../../helpers/user.js";
+import { paymentValidator } from "../../validators/payment.js";
 
 import axios from "axios";
 import Stripe from "stripe";
@@ -24,7 +25,7 @@ export const paymentResolvers = {
     },
 
     async getAllPaymentMethods(_, { limit = 10, skip = 1 }, { user }) {
-      isAuthenticate(user);
+      isAdmin(user);
 
       const page = (skip - 1) * limit;
 
@@ -40,10 +41,14 @@ export const paymentResolvers = {
     },
   },
   Mutation: {
-    async createPayment(_, { payment, image }) {
-      if (!payment.name || !payment.name.length) {
+    async createPayment(_, { payment, image }, { user }) {
+      isAdmin(user);
+
+      //check payment data
+      const paymentErrors = paymentValidator(payment);
+      if (Object.keys(paymentErrors).length !== 0) {
         throw new UserInputError("Invalid argument value", {
-          errors: { name: "Toto pole je povinné" },
+          errors: { ...paymentErrors },
         });
       }
 
@@ -59,13 +64,17 @@ export const paymentResolvers = {
       return data._doc;
     },
 
-    async editPayment(_, { payment, image }) {
-      //check payment data:
-      if (!payment.name || !payment.name.length) {
+    async editPayment(_, { payment, image }, { user }) {
+      isAdmin(user);
+
+      //check payment data
+      const paymentErrors = paymentValidator(payment);
+      if (Object.keys(paymentErrors).length !== 0) {
         throw new UserInputError("Invalid argument value", {
-          errors: { name: "Toto pole je povinné" },
+          errors: { ...paymentErrors },
         });
       }
+
       let update = { ...payment };
       let img;
       if (image && !image.length) {
@@ -76,6 +85,19 @@ export const paymentResolvers = {
         { _id: payment._id },
         update
       );
+
+      return _payment._doc;
+    },
+
+    async deletePayment(_, { id }, { user }) {
+      isAdmin(user);
+
+      // check payment id:
+      if (!id) throw new UserInputError("Neplatné id!");
+
+      const _payment = await Payment.findByIdAndDelete(id);
+
+      if (!_payment) throw new ApolloError("Něco se pokazilo!");
 
       return _payment._doc;
     },
