@@ -28,5 +28,6 @@ export const typeDefs = `
   type Mutation {
     createDeliveryMethod(delivery: DeliveryData!, image: Upload): Delivery!
     editDeliveryMethod(delivery: DeliveryData!, image: Upload): Delivery!
+    deleteDeliveryMethod(id: String): Delivery!
   }
 `;

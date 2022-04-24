@@ -2,7 +2,7 @@ import { UserInputError } from "apollo-server-express";
 import { Deliver } from "../../models/deliver.js";
 import { deliverValidator } from "../../validators/deliver.js";
 import { uploadProcess } from "../../helpers/image.js";
-import { isAuthenticate } from "../../helpers/user.js";
+import { isAdmin } from "../../helpers/user.js";
 
 export const deliveryResolvers = {
   Query: {
@@ -21,7 +21,7 @@ export const deliveryResolvers = {
     },
 
     async getAllDeliveryMethods(_, { limit = 10, skip = 1 }, { user }) {
-      isAuthenticate(user);
+      isAdmin(user);
 
       const page = (skip - 1) * limit;
 
@@ -37,8 +37,10 @@ export const deliveryResolvers = {
     },
   },
   Mutation: {
-    async createDeliveryMethod(_, { delivery, image }) {
-      //check deliver data
+    async createDeliveryMethod(_, { delivery, image }, { user }) {
+      isAdmin(user);
+
+      //check delivery data
       const deliveryErrors = deliverValidator(delivery);
       if (Object.keys(deliveryErrors).length !== 0) {
         throw new UserInputError("Invalid argument value", {
@@ -56,8 +58,11 @@ export const deliveryResolvers = {
 
       return data._doc;
     },
-    async editDeliveryMethod(_, { delivery, image }) {
-      //check deliver data:
+
+    async editDeliveryMethod(_, { delivery, image }, { user }) {
+      isAdmin(user);
+
+      //check delivery data:
       const deliveryErrors = deliverValidator(delivery);
       if (Object.keys(deliveryErrors).length !== 0) {
         throw new UserInputError("Invalid argument value", {
@@ -74,6 +79,19 @@ export const deliveryResolvers = {
         { _id: delivery._id },
         update
       );
+
+      return _delivery._doc;
+    },
+
+    async deleteDeliveryMethod(_, { id }, { user }) {
+      isAdmin(user);
+
+      // check delivery id:
+      if (!id) throw new UserInputError("Neplatné id!");
+
+      const _delivery = await Deliver.findByIdAndDelete(id);
+
+      if (!_delivery) throw new ApolloError("Něco se pokazilo!");
 
       return _delivery._doc;
     },
