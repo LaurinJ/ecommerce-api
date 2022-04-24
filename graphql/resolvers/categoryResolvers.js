@@ -1,7 +1,7 @@
-import { UserInputError } from "apollo-server-express";
+import { ApolloError, UserInputError } from "apollo-server-express";
 import slugify from "slugify";
 import { Category } from "../../models/category.js";
-import { isAuthenticate } from "../../helpers/user.js";
+import { isAdmin } from "../../helpers/user.js";
 
 export const categoryResolvers = {
   Query: {
@@ -20,7 +20,7 @@ export const categoryResolvers = {
     },
 
     async getAllCategories(_, { limit = 10, skip = 1 }, { user }) {
-      isAuthenticate(user);
+      isAdmin(user);
 
       const page = (skip - 1) * limit;
 
@@ -36,7 +36,9 @@ export const categoryResolvers = {
     },
   },
   Mutation: {
-    async createCategory(_, { category }) {
+    async createCategory(_, { category }, { user }) {
+      isAdmin(user);
+
       //check category data:
       if (!category.name || !category.name.length) {
         throw new UserInputError("Invalid argument value", {
@@ -52,7 +54,9 @@ export const categoryResolvers = {
       return data._doc;
     },
 
-    async editCategory(_, { category }) {
+    async editCategory(_, { category }, { user }) {
+      isAdmin(user);
+
       //check category data:
       if (!category.name || !category.name.length) {
         throw new UserInputError("Invalid argument value", {
@@ -69,15 +73,15 @@ export const categoryResolvers = {
       return _category._doc;
     },
 
-    async deleteCategory(_, { id }) {
-      //check category data:
-      if (id) {
-        throw new UserInputError("Invalid argument value", {
-          errors: { name: "Toto pole je povinné" },
-        });
-      }
+    async deleteCategory(_, { id }, { user }) {
+      isAdmin(user);
 
-      const _category = await Category.findOneAndDelete({ _id: id });
+      // check category id:
+      if (!id) throw new UserInputError("Neplatné id!");
+
+      const _category = await Category.findByIdAndDelete(id);
+
+      if (!_category) throw new ApolloError("Něco se pokazilo!");
 
       return _category._doc;
     },
