@@ -60,5 +60,6 @@ export const typeDefs = `
     sendContactMessage(message: ContactData): ContactMessage
     answerContactMessage(id: String!,message: ContactData): Message!
     readContactMessage(id: String!): Message!
+    deleteContactMessage(id: String!): ContactMessage!
   }
 `;

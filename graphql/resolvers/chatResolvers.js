@@ -1,4 +1,4 @@
-import { UserInputError } from "apollo-server-express";
+import { ApolloError, UserInputError } from "apollo-server-express";
 import { AdminChatToken } from "../../models/adminChatToken.js";
 import { Message } from "../../models/message.js";
 import { ContactMessage } from "../../models/contactMessage.js";
@@ -6,7 +6,8 @@ import { withFilter } from "graphql-subscriptions";
 import { PubSub } from "graphql-subscriptions";
 import { contactMessageValidator } from "../../validators/contactMessage.js";
 import { contactMessageEmail } from "../../helpers/email.js";
-import { isAuthenticate } from "../../helpers/user.js";
+import { isAdmin } from "../../helpers/user.js";
+
 export const pubsub = new PubSub();
 
 export const chatResolvers = {
@@ -29,7 +30,7 @@ export const chatResolvers = {
     },
 
     async getContactMessages(_, { limit = 12, skip = 1 }, { user }) {
-      isAuthenticate(user);
+      isAdmin(user);
 
       const page = (skip - 1) * limit;
       const count = await ContactMessage.find({}).countDocuments();
@@ -45,7 +46,7 @@ export const chatResolvers = {
     },
 
     async getContactMessage(_, { id }, { user }) {
-      isAuthenticate(user);
+      isAdmin(user);
 
       if (!id) throw new UserInputError("Tato zpráva neexistuje!");
       const message = await ContactMessage.findOne({ _id: id });
@@ -54,7 +55,7 @@ export const chatResolvers = {
     },
 
     async getContactMessagesCount(_, __, { user }) {
-      isAuthenticate(user);
+      isAdmin(user);
       const count = await ContactMessage.find({ read: false }).countDocuments();
       return { messages: count || 0 };
     },
@@ -69,7 +70,7 @@ export const chatResolvers = {
     },
 
     async setAdminToken(_, { token }, { user }) {
-      isAuthenticate(user);
+      isAdmin(user);
 
       if (token) {
         const adminToken = new AdminChatToken({ token: token });
@@ -81,7 +82,7 @@ export const chatResolvers = {
     },
 
     async deleteAdminToken(_, { token }, { user }) {
-      isAuthenticate(user);
+      isAdmin(user);
 
       if (token) {
         const adminToken = AdminChatToken.findOneAndDelete({ token: token });
@@ -105,7 +106,7 @@ export const chatResolvers = {
     },
 
     async answerContactMessage(_, { id, message }, { user }) {
-      isAuthenticate(user);
+      isAdmin(user);
 
       //check contact data
       const messageErrors = contactMessageValidator(message);
@@ -125,7 +126,7 @@ export const chatResolvers = {
     },
 
     async readContactMessage(_, { id }, { user }) {
-      isAuthenticate(user);
+      isAdmin(user);
 
       let message = await ContactMessage.findById(id);
       if (message) {
@@ -133,6 +134,19 @@ export const chatResolvers = {
         message.save();
       }
       return { message: "Updated" };
+    },
+
+    async deleteContactMessage(_, { id }, { user }) {
+      isAdmin(user);
+
+      // check contact id:
+      if (!id) throw new UserInputError("Neplatné id!");
+
+      const _message = await ContactMessage.findByIdAndDelete(id);
+
+      if (!_message) throw new ApolloError("Něco se pokazilo!");
+
+      return _message._doc;
     },
   },
   Subscription: {
