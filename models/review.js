@@ -13,8 +13,8 @@ const reviewSchema = new mongoose.Schema(
     },
     rating: { type: Number },
     hidden: {
-      type: Number,
-      default: false,
+      type: Boolean,
+      default: true,
     },
   },
 

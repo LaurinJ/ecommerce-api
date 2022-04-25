@@ -3,6 +3,7 @@ import { UserInputError } from "apollo-server-express";
 import escapeStringRegexp from "escape-string-regexp";
 import { Product } from "../../models/product.js";
 import { Category } from "../../models/category.js";
+import { Review } from "../../models/review.js";
 import slugify from "slugify";
 import {
   multipleUpload,
@@ -208,6 +209,9 @@ export const productResolvers = {
       const _product = await Product.findByIdAndDelete(id);
 
       if (!_product) throw new ApolloError("Něco se pokazilo!");
+
+      // hidden product reviews
+      await Review.updateMany({ product: _product._id }, { hidden: false });
 
       return _product._doc;
     },

@@ -8,11 +8,12 @@ export const reviewResolvers = {
       if (product_id) {
         const count = await Review.find({
           product: product_id,
+          hidden: true,
         }).countDocuments();
         const pages = Math.ceil(count / limit);
 
         const _reviews = count
-          ? await Review.find({ product: product_id })
+          ? await Review.find({ product: product_id, hidden: true })
               .populate("user")
               .sort("-createdAt")
               .skip(page)
@@ -28,11 +29,12 @@ export const reviewResolvers = {
       const page = (skip - 1) * limit;
       const count = await Review.find({
         user: user._id,
+        hidden: true,
       }).countDocuments();
       const pages = Math.ceil(count / limit);
 
       const _reviews = count
-        ? await Review.find({ user: user._id })
+        ? await Review.find({ user: user._id, hidden: true })
             .populate("product")
             .sort("-createdAt")
             .skip(page)
