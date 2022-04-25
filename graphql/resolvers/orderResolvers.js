@@ -14,30 +14,29 @@ import {
   confirmOrderEmail,
   deliveredOrderEmail,
 } from "../../helpers/email.js";
-import { isAuthenticate } from "../../helpers/user.js";
+import { isAdmin, isAuthenticate } from "../../helpers/user.js";
 
 export const orderResolvers = {
   Query: {
     async getOrdersCount(_, {}, { user }) {
-      isAuthenticate(user);
+      isAdmin(user);
       const _orders = await Order.find({}).countDocuments();
       return { orders: _orders || 0 };
     },
 
     async getOrdersTotal(_, {}, { user }) {
-      isAuthenticate(user);
-      const _total = await Order.aggregate([
-        {
-          // $match: { state: { $not: "unfinish" } },
-          $group: {
-            _id: null,
-            // is_paid: { $expr: true },
-            total: { $sum: "$total_price" },
-          },
-        },
-      ]);
-      console.log(_total);
-      return { total: _total[0].total || 0 };
+      isAdmin(user);
+      const d = new Date();
+      const date = d.setMonth(d.getMonth() - 1);
+
+      let total_price = await Order.find({
+        state: { $not: { $regex: "unfinish" } },
+        createdAt: { $gte: date },
+      });
+
+      total_price = total_price.reduce((pre, ord) => pre + ord.total_price, 0);
+
+      return { total: total_price || 0 };
     },
 
     async getOrder(_, { orderNumber }) {
@@ -54,7 +53,9 @@ export const orderResolvers = {
       return { ..._order._doc, person: _person };
     },
 
-    async getOrders(_, { limit = 12, skip = 1, params }) {
+    async getOrders(_, { limit = 12, skip = 1, params }, { user }) {
+      isAdmin(user);
+
       const page = (skip - 1) * limit;
       if (params && Object.keys(params).length !== 0) {
         const _params = ordersFilter(params);
@@ -104,7 +105,7 @@ export const orderResolvers = {
     },
   },
   Mutation: {
-    async createOrUpdateOrder(_, { person, address, token }, { user }) {
+    async createOrUpdateOrder(_, { person, address, token }) {
       //check person data:
       const personErrors = personValidator(person);
       //check address data:
@@ -184,7 +185,7 @@ export const orderResolvers = {
     },
 
     async editOrder(_, { person, address, orderNumber, order }, { user }) {
-      isAuthenticate(user);
+      isAdmin(user);
 
       //check person data:
       const personErrors = personValidator(person);
@@ -231,7 +232,7 @@ export const orderResolvers = {
     async sendOrder(_, { orderNumber }, { user }) {
       let _order;
 
-      isAuthenticate(user);
+      isAdmin(user);
 
       // check order number
       if (!orderNumber) throw new UserInputError("Zadej číslo objednávky!");
@@ -263,7 +264,7 @@ export const orderResolvers = {
     async suspendOrder(_, { orderNumber }, { user }) {
       let _order;
 
-      isAuthenticate(user);
+      isAdmin(user);
 
       // check order number
       if (!orderNumber) throw new UserInputError("Zadej číslo objednávky!");
@@ -292,7 +293,7 @@ export const orderResolvers = {
     async cancelOrder(_, { orderNumber }, { user }) {
       let _order;
 
-      isAuthenticate(user);
+      isAdmin(user);
 
       // check order number
       if (!orderNumber) throw new UserInputError("Zadej číslo objednávky!");
