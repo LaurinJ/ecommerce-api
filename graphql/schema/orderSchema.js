@@ -73,6 +73,7 @@ export const typeDefs = `
   }
 
   type Order {
+    _id: String
     items: [Cart]
     total_price: Int
     person: Person
@@ -116,6 +117,7 @@ export const typeDefs = `
     createOrUpdateOrder(person: PersonData, address: AddressData, token: OrderTokenData): OrderToken!
     paymentDelivery(payment: PaymentData, delivery: DeliveryData, token: OrderTokenData!): Message
     finishOrder(order: OrderData, token: OrderTokenData): Order!
+    deleteOrder(id: String): Order!
     editOrder(orderNumber: String,  person: PersonData, address: AddressData, order: EditOrderData): Order    
     sendOrder(orderNumber: String): Message    
     suspendOrder(orderNumber: String): Message    

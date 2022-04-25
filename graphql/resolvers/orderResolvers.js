@@ -230,9 +230,9 @@ export const orderResolvers = {
     },
 
     async sendOrder(_, { orderNumber }, { user }) {
-      let _order;
-
       isAdmin(user);
+
+      let _order;
 
       // check order number
       if (!orderNumber) throw new UserInputError("Zadej číslo objednávky!");
@@ -262,9 +262,9 @@ export const orderResolvers = {
     },
 
     async suspendOrder(_, { orderNumber }, { user }) {
-      let _order;
-
       isAdmin(user);
+
+      let _order;
 
       // check order number
       if (!orderNumber) throw new UserInputError("Zadej číslo objednávky!");
@@ -291,9 +291,9 @@ export const orderResolvers = {
     },
 
     async cancelOrder(_, { orderNumber }, { user }) {
-      let _order;
-
       isAdmin(user);
+
+      let _order;
 
       // check order number
       if (!orderNumber) throw new UserInputError("Zadej číslo objednávky!");
@@ -317,6 +317,19 @@ export const orderResolvers = {
         return { message: "Objednávka byla zrušená." };
       }
       throw new ApolloError("Neplatné číslo objednávky!");
+    },
+
+    async deleteOrder(_, { id }, { user }) {
+      isAdmin(user);
+
+      // check order id:
+      if (!id) throw new UserInputError("Neplatné id!");
+
+      const _order = await Order.findByIdAndDelete(id);
+
+      if (!_order) throw new ApolloError("Něco se pokazilo!");
+
+      return _order._doc;
     },
   },
 };

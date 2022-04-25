@@ -69,5 +69,6 @@ export const typeDefs = `
   type Mutation {
     createProduct(product: ProductInputData, images: [Upload]): Product!
     editProduct(product: ProductInputData, images: [Upload]): Product!
+    deleteProduct(id: String): Product!
   }
 `;

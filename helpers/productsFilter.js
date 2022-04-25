@@ -14,6 +14,6 @@ export const productsFilter = (params) => {
   if (params.max_price && typeof params.max_price === "number") {
     filter["price"] = { ...filter.price, $lte: params.max_price };
   }
-  // filter["hidden"] = false;
+  // filter["hidden"] = true;
   return filter;
 };

@@ -12,7 +12,7 @@ import {
 import { chillfeed } from "../../chillfeed.js";
 import { productValidator } from "../../validators/product.js";
 import { productsFilter } from "../../helpers/productsFilter.js";
-import { isAuthenticate } from "../../helpers/user.js";
+import { isAdmin } from "../../helpers/user.js";
 
 export const productResolvers = {
   Upload: GraphQLUpload,
@@ -93,7 +93,7 @@ export const productResolvers = {
     },
 
     async getCountProducts(_, __, { user }) {
-      isAuthenticate(user);
+      isAdmin(user);
       const count = await Product.find({}).countDocuments();
       return { count: count };
     },
@@ -142,7 +142,7 @@ export const productResolvers = {
   },
   Mutation: {
     async createProduct(_, { product, images }, { user }) {
-      isAuthenticate(user);
+      isAdmin(user);
 
       //check product data:
       const productErrors = productValidator(product);
@@ -172,7 +172,7 @@ export const productResolvers = {
     },
 
     async editProduct(_, { product, images }, { user }) {
-      isAuthenticate(user);
+      isAdmin(user);
 
       //check product data:
       const productErrors = productValidator(product);
@@ -197,6 +197,19 @@ export const productResolvers = {
       );
 
       return newProduct;
+    },
+
+    async deleteProduct(_, { id }, { user }) {
+      isAdmin(user);
+
+      // check product id:
+      if (!id) throw new UserInputError("Neplatné id!");
+
+      const _product = await Product.findByIdAndDelete(id);
+
+      if (!_product) throw new ApolloError("Něco se pokazilo!");
+
+      return _product._doc;
     },
   },
 };
