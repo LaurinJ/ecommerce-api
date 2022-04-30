@@ -22,8 +22,8 @@ async function startApolloServer() {
   };
   const app = express();
   app.use(cors(corsOptions));
-  app.use("/", pdfRoute);
-  app.use("/", paymentRoute);
+  app.use("/api", pdfRoute);
+  app.use("/api", paymentRoute);
   app.use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 }));
   app.use(express.static("images"));
   const httpServer = http.createServer(app);

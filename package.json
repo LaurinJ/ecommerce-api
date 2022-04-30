@@ -5,7 +5,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "start": "node server.js"
   },
   "keywords": [],
   "author": "Josef Laurin",
@@ -27,6 +28,7 @@
     "mongoose": "^5.12.3",
     "nodemailer": "^6.7.2",
     "nodemon": "^2.0.7",
+    "pdfkit": "^0.13.0",
     "slugify": "^1.5.0",
     "stripe": "^8.205.0",
     "subscriptions-transport-ws": "^0.11.0"

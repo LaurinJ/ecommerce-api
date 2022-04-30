@@ -23,11 +23,11 @@ export const productResolvers = {
       // products = [];
       const products = await Promise.all(
         chillfeed.SHOP.SHOPITEM.map(async (product) => {
-          imgUrl = await downloadFile(product.IMGURL[0], "images");
+          let imgUrl = await downloadFile(product.IMGURL[0], "images");
 
-          imgUrls = await multiDownload(product.IMAGES[0].IMGURL, "images");
+          let imgUrls = await multiDownload(product.IMAGES[0].IMGURL, "images");
 
-          item = {
+          let item = {
             title: product.PRODUCT_NAME[0],
             slug: slugify(product.PRODUCT_NAME[0]),
             description: product.DESCRIPTION_HTML[0],
@@ -45,7 +45,7 @@ export const productResolvers = {
           return item;
         })
       );
-      Product.collection.insert(products, function (err, docs) {
+      Product.insertMany(products, function (err, docs) {
         if (err) {
           return console.error(err);
         } else {
@@ -84,10 +84,11 @@ export const productResolvers = {
     },
 
     async getProduct(_, { slug }) {
-      const product = await Product.findOne({ slug: slug }).populate(
-        "categories",
-        "-__v"
-      );
+      const product = await Product.findOne({ slug: slug });
+      // .populate(
+      //   "categories",
+      //   "-__v"
+      // );
       if (!product) throw new Error("Produkt nebyl nalezen");
 
       return product;
