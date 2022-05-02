@@ -105,7 +105,7 @@ export const orderResolvers = {
     },
   },
   Mutation: {
-    async createOrUpdateOrder(_, { person, address, token }) {
+    async createOrUpdateOrder(_, { person, address, token }, { user }) {
       //check person data:
       const personErrors = personValidator(person);
       //check address data:
