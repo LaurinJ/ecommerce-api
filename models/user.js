@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { Token } from "./token.js";
+import { Profile } from "./profile.js";
 
 const { ObjectId } = mongoose.Schema;
 
@@ -25,7 +26,7 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: Number,
-      default: 0,
+      default: 1,
     },
     profile: {
       type: ObjectId,
@@ -85,6 +86,15 @@ userSchema.methods = {
       let hashedPassword = await bcrypt.hash(password, salt); // hash the new user's password
       this.password = hashedPassword;
       await this.save();
+    } catch (error) {
+      console.error(error);
+      return;
+    }
+  },
+  createProfile: async function () {
+    try {
+      const profile = await new Profile().save();
+      this.profile = profile._id;
     } catch (error) {
       console.error(error);
       return;

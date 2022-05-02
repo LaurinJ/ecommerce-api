@@ -25,7 +25,7 @@ async function startApolloServer() {
   app.use("/api", pdfRoute);
   app.use("/api", paymentRoute);
   app.use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 }));
-  app.use(express.static("images"));
+  app.use("/images", express.static("images"));
   const httpServer = http.createServer(app);
 
   const subscriptionServer = SubscriptionServer.create(

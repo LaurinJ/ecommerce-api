@@ -10,6 +10,12 @@ RUN npm install --production
 
 COPY ./ /backend
 
+RUN mkdir /backend/invoices 
+RUN mkdir /backend/images 
+RUN mkdir /backend/images/profile 
+RUN mkdir /backend/images/deliver 
+RUN mkdir /backend/images/payment 
+
 
 EXPOSE 4000
 

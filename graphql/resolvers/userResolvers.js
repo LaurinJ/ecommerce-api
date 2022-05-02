@@ -130,6 +130,7 @@ export const userResolvers = {
       //create new user and generate a pair of tokens and send
       _user = new User(user);
       await _user.generatePassword();
+      await _user.createProfile();
       await _user.save();
       let accessToken = await _user.createAccessToken();
       let refreshToken = await _user.createRefreshToken();
@@ -213,7 +214,9 @@ export const userResolvers = {
             name: name,
             email: email,
             password: jti,
-          }).save();
+          });
+          await newUser.createProfile();
+          await newUser.save();
           let accessToken = await newUser.createAccessToken();
           let refreshToken = await newUser.createRefreshToken();
           delete newUser.password;

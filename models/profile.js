@@ -4,8 +4,8 @@ const profileSchema = new mongoose.Schema(
   {
     profile_image: {
       type: String,
-      required: true,
-      default: "/profile.jpg",
+      // required: true,
+      default: "/default.png",
     },
   },
 
