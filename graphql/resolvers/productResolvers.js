@@ -47,6 +47,7 @@ export const productResolvers = {
             price: Math.round(Number(product.PRICE[0])),
             old_price: Math.round(Number(product.MINIMAL_PRICE_VAT[0])),
             countInStock: Number(product.VAT[0]),
+            hidden: true,
             categories:
               categories[Math.floor(Math.random() * categories.length)]._id,
           };

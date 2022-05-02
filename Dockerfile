@@ -4,7 +4,7 @@ ENV NODE_ENV=production
 
 WORKDIR /backend
 
-COPY ./package*.json /backend
+COPY ./package*.json /backend/
 
 RUN npm install --production
 
