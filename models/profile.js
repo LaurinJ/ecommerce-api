@@ -5,7 +5,7 @@ const profileSchema = new mongoose.Schema(
     profile_image: {
       type: String,
       // required: true,
-      default: "/default.png",
+      default: "default.jpg",
     },
   },
 
