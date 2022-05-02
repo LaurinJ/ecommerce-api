@@ -58,7 +58,7 @@ export const typeDefs = `
   }
 
   type Query {
-    testmultisave: Product!
+    mockData: Product!
     getProduct(slug: String!): Product!
     getProducts(limit: Int, skip: Int, query: String): [Product]
     getProductsByCategory(limit: Int, skip: Int, params: FilterData): FilterProducts!

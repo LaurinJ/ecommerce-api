@@ -18,9 +18,16 @@ import { isAdmin } from "../../helpers/user.js";
 export const productResolvers = {
   Upload: GraphQLUpload,
   Query: {
-    // only test
-    async testmultisave(_) {
-      // products = [];
+    // only test or mock
+    async mockData(_) {
+      let _category = ["Extra pálivé", "Mírně pálivé", "Středně pálivé"];
+      _category = _category.map((cat) => {
+        const slug = slugify(cat);
+        return new Category({ name: cat, slug: slug, hidden: true });
+      });
+
+      const categories = await Category.insertMany(_category);
+
       const products = await Promise.all(
         chillfeed.SHOP.SHOPITEM.map(async (product) => {
           let imgUrl = await downloadFile(product.IMGURL[0], "images");
@@ -40,7 +47,8 @@ export const productResolvers = {
             price: Math.round(Number(product.PRICE[0])),
             old_price: Math.round(Number(product.MINIMAL_PRICE_VAT[0])),
             countInStock: Number(product.VAT[0]),
-            categories: ["slevy"],
+            categories:
+              categories[Math.floor(Math.random() * categories.length)]._id,
           };
           return item;
         })
@@ -56,7 +64,7 @@ export const productResolvers = {
       const product = await Product.findOne({ price: 157 }).populate(
         "categories"
       );
-      if (product.length === 0) {
+      if (!product) {
         throw new Error("Nebyli nalezené žádné produkty");
       }
       return product;
