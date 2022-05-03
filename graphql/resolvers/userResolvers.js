@@ -303,7 +303,7 @@ export const userResolvers = {
           const data = new Email({ email: email });
           await data.save();
         }
-        return { message: "Ok" };
+        return { message: "Úspěšně jste se přihlásil(a) k odběr novinek." };
       }
       throw new UserInputError(error);
     },
