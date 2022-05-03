@@ -6,7 +6,8 @@ export const productsFilter = (params) => {
     filter["title"] = { $regex: escapeStringRegexp(params.title) };
   }
   if (params.category) {
-    filter["categories"] = escapeStringRegexp(params.category);
+    // filter["categories"] = escapeStringRegexp(params.category);
+    filter["categories"] = params.category;
   }
   if (params.min_price && typeof params.min_price === "number") {
     filter["price"] = { $gte: params.min_price };
