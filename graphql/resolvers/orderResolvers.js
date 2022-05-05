@@ -120,6 +120,7 @@ export const orderResolvers = {
         });
       }
       if (token.token) {
+        console.log(token);
         _order = await Order.findOne(token).populate(
           "person",
           " person_detail address"
@@ -135,10 +136,11 @@ export const orderResolvers = {
           );
         }
       } else {
+        // create new person and order
         let _person_detail = await new PersonDetail(person).save();
         let _address = await new Address(address).save();
         let _person = await new Person({
-          user: user._id,
+          user: user?._id,
           person_detail: _person_detail._id,
           address: _address._id,
           delivery_adress: _address._id,

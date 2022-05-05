@@ -6,8 +6,7 @@ import { createInvoice } from "../../helpers/invoice.js";
 
 const stripe = Stripe(process.env.STRIPE_PRIVATE_KEY);
 
-const endpointSecret =
-  "whsec_d0124fac0988f50065bcb40336a6dbec2ef36d28d79b00ddc684c2a374030102";
+const endpointSecret = process.env.STRIPE_ENDPOINT_SECRET;
 
 export const stripeWebhook = async function (req, res) {
   let event;
