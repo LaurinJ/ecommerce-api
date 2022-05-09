@@ -130,7 +130,7 @@ export const paymentResolvers = {
               };
             }),
             success_url: `${process.env.FRONTEND_URL}/checkout/success`,
-            cancel_url: `${process.env.FRONTEND_URL}/checkout/pay-for-it?order=${_order.orderNumber}`,
+            cancel_url: `${process.env.FRONTEND_URL}/checkout/pay-for-it?order=${_order.orderNumber}&payment=Stripe`,
           });
           return { url: session.url };
         } catch (e) {
@@ -168,8 +168,8 @@ export const paymentResolvers = {
               brand_name: "BigBuy.cz",
               landing_page: "NO_PREFERENCE",
               user_action: "PAY_NOW",
-              return_url: `${process.env.BACKEND_URL}/capture-order`,
-              cancel_url: `${process.env.FRONTEND_URL}/checkout/pay-for-it?order=${_order.orderNumber}`,
+              return_url: `${process.env.BACKEND_URL}/api/capture-order`,
+              cancel_url: `${process.env.FRONTEND_URL}/checkout/pay-for-it?order=${_order.orderNumber}&payment=PayPal`,
             },
           };
 
