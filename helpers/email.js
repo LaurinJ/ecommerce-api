@@ -23,7 +23,7 @@ export const passwordResetEmail = async (email) => {
     to: email, // list of receivers
     subject: "Změna hesla", // Subject line
     text: "Pro změnu hesla klikni na nasledujcí tlačítko", // plain text body
-    html: `<p>Pro změnu hesla klikni na nasledujcí tlačítko</p><a style='color: white; text-decoration:none; font-weight: 700; padding: 5px; background-color: blue;' href='http://localhost:3000/account/resetpassword?token=${token}'>Změnit heslo</a>`, // html body
+    html: `<p>Pro změnu hesla klikni na nasledujcí tlačítko</p><a style='color: white; text-decoration:none; font-weight: 700; padding: 5px; background-color: blue;' href='${process.env.FRONTEND_URL}account/resetpassword?token=${token}'>Změnit heslo</a>`, // html body
   });
 };
 
